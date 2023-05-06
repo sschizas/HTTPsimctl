@@ -1,0 +1,29 @@
+@Tutorial(time: <#number#>) {
+    @Intro(title: "<#text#>") {
+        <#text#>
+        
+        @Image(source: <#file#>, alt: "<#accessible description#>")
+    }
+    
+    @Section(title: "How to open a link") {
+        @ContentAndMedia {
+            <#text#>
+            
+            @Image(source: <#file#>, alt: "<#accessible description#>")
+        }
+        
+        @Steps {
+            @Step {
+                <#text#>
+                
+                @Image(source: <#file#>, alt: "<#accessible description#>")
+            }
+            
+            @Step {
+                <#text#>
+                
+                @Code(name: "<#display name#>", file: <#filename.swift#>)
+            }
+        }
+    }
+}

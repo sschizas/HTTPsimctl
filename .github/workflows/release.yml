@@ -1,0 +1,89 @@
+name: Build and create release
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - '*'
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-13
+    steps:
+      - name: Select Xcode
+        run: sudo xcode-select -s "/Applications/Xcode_14.3.1.app"
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Cache SPMs
+        uses: actions/cache@v3
+        with:
+          path: .build
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+      - name: Build binary
+        run: xcrun swift build -c release --arch arm64 --arch x86_64
+      - name: Compress archive
+        run: |
+          cd .build/apple/Products/Release
+          mv Run httpsimctl
+          tar -czf httpsimctl.tar.gz ./httpsimctl
+      - name: Upload zip binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: httpsimctl.tar.gz
+          path: .build/apple/Products/Release/httpsimctl.tar.gz
+          retention-days: 1
+
+  create_release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Download zip binary
+        uses: actions/download-artifact@v3
+        with:
+          name: httpsimctl.tar.gz
+      - name: Get release notes
+        id: release_notes
+        uses: release-flow/keep-a-changelog-action@v2
+        with:
+          command: query
+          version: ${{ github.ref_name }}
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{ steps.release_notes.outputs.release-notes }}
+          draft: false
+          prerelease: false
+          files: httpsimctl.tar.gz
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  homebrew:
+    needs: create_release
+    name: Bump Homebrew formula
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mislav/bump-homebrew-formula-action@v2
+        with:
+          formula-name: httpsimctl
+          formula-path: Formula/httpsimctl.rb
+          homebrew-tap: sschizas/homebrew-formulae
+          base-branch: main
+          download-url: https://github.com/sschizas/HTTPsimctl/releases/download/${{ github.ref_name }}/httpsimctl.tar.gz
+          commit-message: |
+            {{formulaName}} {{version}}
+        env:
+          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
