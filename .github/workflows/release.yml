@@ -1,0 +1,77 @@
+name: Build and create release
+
+on:
+  push:
+    tags:
+      - '*'
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-12
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Cache SPMs
+        uses: actions/cache@v3
+        with:
+          path: .build
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+      - name: Build binary
+        run: xcrun swift build -c release --arch arm64 --arch x86_64 --product HTTPsimctl
+      - name: Compress archive
+        run: tar -czf ${{ github.ref_name }}.tar.gz -C .build/apple/Products/Release HTTPsimctl
+      - name: Upload zip binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: HTTPsimctl.tar.gz
+          path: .build/apple/Products/Release/HTTPsimctl.tar.gz
+          retention-days: 1
+
+  create_release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: 'Get Previous tag'
+        id: tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      - name: Get release notes
+        id: get-release-notes
+        uses: release-flow/keep-a-changelog-action/get-release-notes@v1
+        with:
+          release-version: ${{ steps.tag.outputs.tag }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: ${{ steps.get-release-notes.outputs.release-notes }}
+          draft: false
+          prerelease: false
+      - name: Download zip binary
+        uses: actions/download-artifact@v3
+        with:
+          name: HTTPsimctl.tar.gz
+      - name: Upload
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./HTTPsimctl.tar.gz
+          asset_name: HTTPsimctl.tar.gz
+          asset_content_type: application/gzip

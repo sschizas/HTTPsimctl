@@ -1,0 +1,138 @@
+- empty_count
+  - weak_delegate
+  - explicit_init
+  - closure_spacing
+  - overridden_super_call
+  - redundant_nil_coalescing
+  - private_outlet
+  - private_action
+  - nimble_operator
+  - attributes
+  - operator_usage_whitespace
+  - closure_end_indentation
+  - first_where
+  - sorted_first_last
+  - object_literal
+  - number_separator
+  - prohibited_super_call
+  - fatal_error_message
+  - vertical_parameter_alignment_on_call
+  - let_var_whitespace
+  - unneeded_parentheses_in_closure_argument
+  - extension_access_modifier
+  - pattern_matching_keywords
+  - array_init
+  - literal_expression_end_indentation
+  - switch_case_on_newline
+  - trailing_closure
+  - sorted_imports
+  - vertical_whitespace_between_cases
+  - multiline_arguments_brackets
+  - multiline_literal_brackets
+  - multiline_parameters_brackets
+  - vertical_whitespace_opening_braces
+  - vertical_whitespace_closing_braces
+  - legacy_hashing
+  - contains_over_first_not_nil
+  - nslocalizedstring_require_bundle
+  - reduce_into
+  - nsobject_prefer_isequal
+  - legacy_multiple
+  - unowned_variable_capture
+  - raw_value_for_camel_cased_codable_enum
+  - toggle_bool
+  - flatmap_over_map_reduce
+  - contains_over_range_nil_comparison
+  - prefer_self_type_over_type_of_self
+  - optional_enum_case_matching
+  - indentation_width
+  - orphaned_doc_comment
+  - strict_fileprivate
+  - modifier_order
+  - file_types_order
+  - type_contents_order
+  - ibinspectable_in_extension
+  - prefer_zero_over_explicit_init
+  - discouraged_none_name
+  - redundant_type_annotation
+  - discouraged_assert
+  - duplicated_key_in_dictionary_literal
+  - anonymous_argument_in_multiline_closure
+  - function_default_parameter_at_end
+
+analyzer_rules:
+  - capture_variable
+  - unused_import
+
+
+identifier_name:
+  excluded:
+    - id
+force_cast: warning
+force_try:
+  severity: warning
+line_length: 180
+syntactic_sugar: error
+trailing_comma:
+  severity: error
+trailing_newline: error
+trailing_semicolon: error
+trailing_whitespace: error
+unused_closure_parameter: error
+unused_optional_binding:
+  severity: error
+vertical_whitespace:
+  severity: error
+file_length:
+  warning: 600
+  error: 1200
+  ignore_comment_only_lines: true
+function_body_length:
+  warning: 50
+  error: 70
+type_body_length:
+  warning: 400
+  error: 500
+type_name:
+  max_length: # warning and error
+    warning: 50
+    error: 60
+object_literal:
+  color_literal: false
+trailing_whitespace:
+  ignores_empty_lines: true # This is such a hassle to do right and adds nothing
+number_separator:
+  minimum_length: 5
+nesting:
+  type_level: 2
+large_tuple:
+  warning: 3 # warning
+  error: 4 # error
+
+custom_rules:
+  overridden_only_calls_super:
+    included: ".*.swift"
+    regex: 'override func [^\n]*\{\n(\s*super\.[^\n]*\n(\s*\/\/[^\n]*\n)*|(\s*\/\/[^\n]*\n)+)\s*\}'
+    message: "Overridden methods which only call super can be removed"
+
+  final_class:
+    included: ".*.swift"
+    regex: "^class|^private class|^public class|^internal class"
+    message: "Consider using final for this class, or use a struct"
+
+  unowned_self:
+    included: ".*.swift"
+    regex: "unowned self"
+    message: "It is safer to use weak instead of unowned"
+
+excluded:
+  - ./Carthage
+  - ./.build
+  - ./.derivedData
+  - ./.spm_build
+  - ./Playgrounds
+  - ./Submodules
+  - ./Vendor
+  - ./Pods
+  - ./bundle
+  - ./.rbenv
