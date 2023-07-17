@@ -16,7 +16,7 @@ A command-line tool written in Swift/Vapor for interacting with iOS Simulators v
 To install `HTTPsimctl` using [Homebrew](https://brew.sh/), run the following command in your terminal:
 
 ```terminal
-$ brew tap sschizas/formulae/httpsimctl
+$ brew install sschizas/formulae/httpsimctl
 ```
 
 ### Manually
