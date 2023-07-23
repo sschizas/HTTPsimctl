@@ -14,7 +14,6 @@ struct OpenURLRequestBody: Content, SimulatorID {
 
   /// The UUID of the simulator to open the URL on.
   var simulatorUDID: UUID?
-
 }
 
 extension OpenURLRequestBody: Validatable {

@@ -18,16 +18,20 @@ let package = Package(
             ],
             swiftSettings: [
                 .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))
+            ],
+            plugins: [
+                .plugin(name: "SwiftLint", package: "SwiftLintPlugin")
             ]
         ),
         .executableTarget(name: "Run", dependencies: [.target(name: "App")]),
         .testTarget(name: "AppTests", dependencies: [
             .target(name: "App"),
-            .product(name: "XCTVapor", package: "vapor"),
+            .product(name: "XCTVapor", package: "vapor")
         ])
     ]
 )
 
 #if !RELEASE
 package.dependencies.append(.package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"))
+package.dependencies.append(.package(url: "https://github.com/lukepistrol/SwiftLintPlugin", from: "0.2.2"))
 #endif
