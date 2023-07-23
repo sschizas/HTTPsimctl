@@ -26,8 +26,8 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import XCTVapor
 import App
+import XCTVapor
 
 extension Application {
     static func testable() throws -> Application {

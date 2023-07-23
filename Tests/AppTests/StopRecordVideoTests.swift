@@ -22,7 +22,7 @@ final class StopRecordVideoTests: XCTestCase {
     // MARK: Tests
     func testStopRecordVideo() throws {
         // Given
-        let pid = 12352
+        let pid = 12_352
         let filepath = "foo4"
         let shellSpy = ShellableSpy()
         let body = StopRecordingVideoRequestBody(pid: pid, fileName: filepath)
@@ -47,7 +47,7 @@ final class StopRecordVideoTests: XCTestCase {
     
     func testStopRecordVideoEmptyFilename() throws {
         // Given
-        let pid = 12352
+        let pid = 12_352
         let filepath = ""
         let shellSpy = ShellableSpy()
         let body = StopRecordingVideoRequestBody(pid: pid, fileName: filepath)

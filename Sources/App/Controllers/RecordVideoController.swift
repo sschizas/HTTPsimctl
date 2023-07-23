@@ -8,6 +8,7 @@ import Vapor
 
 struct RecordVideoController: RouteCollection {
     let fileExtension = "mp4"
+
     func boot(routes: Vapor.RoutesBuilder) throws {
         let routesGroup = routes.grouped("record-video")
         routesGroup.post("start", use: recordVideo)

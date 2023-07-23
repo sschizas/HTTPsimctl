@@ -9,10 +9,10 @@ concurrency:
 
 jobs:
   tests:
-    name: Run tests on ${{ matrix.os }}
+    name: Tests
     strategy:
       matrix:
-        os: [macos-12]
+        os: [macos-13]
         swift: ["5"]
     runs-on: ${{ matrix.os }}
 

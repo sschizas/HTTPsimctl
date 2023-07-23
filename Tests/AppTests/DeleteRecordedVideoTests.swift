@@ -22,7 +22,7 @@ final class DeleteRecordedVideoTests: XCTestCase {
     // MARK: Tests
     func testDeleteRecordedVideo() throws {
         // Given
-        let pid = 12352
+        let pid = 12_352
         let filepath = "foo4"
         let shellSpy = ShellableSpy()
         let body = StopRecordingVideoRequestBody(pid: pid, fileName: filepath)

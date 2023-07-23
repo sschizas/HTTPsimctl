@@ -1,6 +1,6 @@
 //
 //  Shell.swift
-//  
+//
 //
 //  Created by Stavros Schizas on 27/10/22.
 //
@@ -8,10 +8,25 @@
 import Foundation
 import Vapor
 
+/// A protocol defining methods to interact with the shell or command-line interface.
 public protocol Shellable {
+    /// Runs a shell command without returning any result.
+    ///
+    /// - Parameter command: The shell command to execute.
     func run(_ command: String)
+    
+    /// Runs a shell command and returns the output as a string.
+    ///
+    /// - Parameter command: The shell command to execute.
+    /// - Returns: The output of the executed command as a string.
+    /// - Throws: An error if the command execution fails.
     @discardableResult
     func runCommandWithReturn(_ command: String) throws -> String
+    
+    /// Checks if a process with the given process ID (PID) is currently running.
+    ///
+    /// - Parameter pid: The process ID (PID) to check.
+    /// - Returns: `true` if the process is running, `false` otherwise.
     func isProcessRunning(pid: Int32) -> Bool
 }
 
@@ -57,7 +72,7 @@ final class Shell: Shellable {
         task.arguments = ["-p", "\(pid)"]
         task.standardOutput = Pipe()
         task.launch()
-
+        
         task.waitUntilExit()
         return task.terminationStatus == 0
     }
@@ -79,7 +94,8 @@ extension Shell.Error: AbortError {
     
     var status: HTTPResponseStatus {
         switch self {
-        case .shellOutputFailed: return .internalServerError
+        case .shellOutputFailed:
+            return .internalServerError
         }
     }
     

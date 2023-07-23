@@ -1,6 +1,6 @@
 import Vapor
 
-func routes(_ app: Application) throws {    
+func routes(_ app: Application) throws {
     let openURLController = OpenURLController()
     try app.register(collection: openURLController)
     

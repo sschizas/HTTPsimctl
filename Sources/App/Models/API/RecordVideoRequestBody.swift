@@ -7,10 +7,9 @@
 import Vapor
 
 /// A request body for recording a video.
-///- Note: The `fileName` property is required, while `simulatorUDID` is optional.
-///- Warning: The `fileName` property must be at least 3 characters long and contain only alphanumeric characters.
+/// - Note: The `fileName` property is required, while `simulatorUDID` is optional.
+/// - Warning: The `fileName` property must be at least 3 characters long and contain only alphanumeric characters.
 struct RecordVideoRequestBody: Content, SimulatorID {
-
   /// The name of the video file to be recorded.
   let fileName: String
 
@@ -20,7 +19,6 @@ struct RecordVideoRequestBody: Content, SimulatorID {
 
 extension RecordVideoRequestBody: Validatable {
   static func validations(_ validations: inout Vapor.Validations) {
-
     // Validate the fileName property.
     validations.add("fileName", as: String.self, is: .count(3...) && .characterSet(.alphanumerics))
 

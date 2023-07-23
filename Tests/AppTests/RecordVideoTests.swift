@@ -21,7 +21,7 @@ final class RecordVideoTests: XCTestCase {
     // MARK: Tests
     func testPostRecordVideoWithoutSimulatorUDID() throws {
         // Given
-        let pid = 12352
+        let pid = 12_352
         let shellSpy = ShellableSpy()
         let body = RecordVideoRequestBody(fileName: "foo")
         self.app.shell = shellSpy
@@ -43,7 +43,7 @@ final class RecordVideoTests: XCTestCase {
     
     func testPostRecordVideoWithSimulatorUDID() throws {
         // Given
-        let pid = 12352
+        let pid = 12_352
         let uuid = UUID()
         let shellSpy = ShellableSpy()
         let body = RecordVideoRequestBody(fileName: "foo", simulatorUDID: uuid)
@@ -65,7 +65,7 @@ final class RecordVideoTests: XCTestCase {
     
     func testPostBadRequestEmptyFilename() throws {
         // Given
-        let pid = 12352
+        let pid = 12_352
         let shellSpy = ShellableSpy()
         let body = RecordVideoRequestBody(fileName: "")
         self.app.shell = shellSpy
@@ -83,7 +83,7 @@ final class RecordVideoTests: XCTestCase {
     
     func testPostBadRequestFilenameInvalidLenght() throws {
         // Given
-        let pid = 12352
+        let pid = 12_352
         let shellSpy = ShellableSpy()
         let body = RecordVideoRequestBody(fileName: "ab")
         self.app.shell = shellSpy
@@ -101,7 +101,7 @@ final class RecordVideoTests: XCTestCase {
     
     func testPostBadRequestFilenameInvalidFormat() throws {
         // Given
-        let pid = 12352
+        let pid = 12_352
         let shellSpy = ShellableSpy()
         let body = RecordVideoRequestBody(fileName: "ab123@")
         self.app.shell = shellSpy
@@ -119,7 +119,7 @@ final class RecordVideoTests: XCTestCase {
     
     func testPostBadRequestEmptySimulatorUDID() throws {
         // Given
-        let pid = 12352
+        let pid = 12_352
         let shellSpy = ShellableSpy()
         self.app.shell = shellSpy
         shellSpy.stubbedRunCommandWithReturn = pid.description
