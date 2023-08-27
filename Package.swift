@@ -8,7 +8,8 @@ let package = Package(
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
-        .package(url: "https://github.com/vapor/vapor.git", .upToNextMajor(from: "4.0.0"))
+        .package(url: "https://github.com/vapor/vapor.git", .upToNextMajor(from: "4.0.0")),
+        .package(url: "https://github.com/realm/SwiftLint", .upToNextMajor(from: "0.52.0"))
     ],
     targets: [
         .target(
@@ -20,7 +21,7 @@ let package = Package(
                 .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))
             ],
             plugins: [
-                .plugin(name: "SwiftLint", package: "SwiftLintPlugin")
+                .plugin(name: "SwiftLintPlugin", package: "SwiftLint")
             ]
         ),
         .executableTarget(name: "Run", dependencies: [.target(name: "App")]),
@@ -33,5 +34,4 @@ let package = Package(
 
 #if !RELEASE
 package.dependencies.append(.package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"))
-package.dependencies.append(.package(url: "https://github.com/lukepistrol/SwiftLintPlugin", from: "0.2.2"))
 #endif
