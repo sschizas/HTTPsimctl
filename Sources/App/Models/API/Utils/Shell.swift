@@ -56,11 +56,12 @@ final class Shell: Shellable {
         task.standardOutput = pipe
         task.arguments = ["-c", command]
         task.launchPath = "/bin/bash"
-        
         task.launch()
+        
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         task.waitUntilExit()
-        guard let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .newlines) else {
+        let string = String(data: data, encoding: .utf8)
+        guard let output = string?.trimmingCharacters(in: .newlines) else {
             throw Error.shellOutputFailed
         }
         return output
@@ -72,14 +73,13 @@ final class Shell: Shellable {
         task.arguments = ["-p", "\(pid)"]
         task.standardOutput = Pipe()
         task.launch()
-        
         task.waitUntilExit()
         return task.terminationStatus == 0
     }
 }
 
 extension Application {
-    var shell: (any Shellable)! {
+    var shell: (any Shellable) {
         get {
             self.storage[ShellKey.self, default: Shell()]
         }

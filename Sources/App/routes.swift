@@ -7,6 +7,6 @@ func routes(_ app: Application) throws {
     let recordVideoController = RecordVideoController()
     try app.register(collection: recordVideoController)
     
-    let sendPNContoller = SendPNController()
-    try app.register(collection: sendPNContoller)
+    let permissionsController = PermissionsController()
+    try app.register(collection: permissionsController)
 }

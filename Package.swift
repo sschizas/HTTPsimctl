@@ -18,7 +18,16 @@ let package = Package(
                 .product(name: "Vapor", package: "vapor")
             ],
             swiftSettings: [
-                .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))
+                .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release)),
+                .unsafeFlags(
+                    [
+                        "-Xfrontend",
+                        "-warn-long-function-bodies=20",
+                        "-Xfrontend",
+                        "-warn-long-expression-type-checking=20"
+                    ],
+                    .when(configuration: .debug)
+                )
             ],
             plugins: [
                 .plugin(name: "SwiftLintPlugin", package: "SwiftLint")
