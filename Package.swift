@@ -8,8 +8,7 @@ let package = Package(
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
-        .package(url: "https://github.com/vapor/vapor.git", .upToNextMajor(from: "4.0.0")),
-        .package(url: "https://github.com/realm/SwiftLint", .upToNextMajor(from: "0.52.0"))
+        .package(url: "https://github.com/vapor/vapor.git", .upToNextMajor(from: "4.0.0"))
     ],
     targets: [
         .target(
@@ -18,17 +17,27 @@ let package = Package(
                 .product(name: "Vapor", package: "vapor")
             ],
             swiftSettings: [
-                .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))
-            ],
-            plugins: [
-                .plugin(name: "SwiftLintPlugin", package: "SwiftLint")
+                .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release)),
+                .unsafeFlags(
+                    [
+                        "-Xfrontend",
+                        "-warn-long-function-bodies=20",
+                        "-Xfrontend",
+                        "-warn-long-expression-type-checking=20"
+                    ],
+                    .when(configuration: .debug)
+                )
             ]
         ),
         .executableTarget(name: "Run", dependencies: [.target(name: "App")]),
-        .testTarget(name: "AppTests", dependencies: [
-            .target(name: "App"),
-            .product(name: "XCTVapor", package: "vapor")
-        ])
+        .testTarget(
+            name: "AppTests",
+            dependencies:
+                [
+                    .target(name: "App"),
+                    .product(name: "XCTVapor", package: "vapor")
+                ]
+        )
     ]
 )
 
