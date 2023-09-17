@@ -8,8 +8,7 @@ let package = Package(
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
-        .package(url: "https://github.com/vapor/vapor.git", .upToNextMajor(from: "4.0.0")),
-        .package(url: "https://github.com/realm/SwiftLint", .upToNextMajor(from: "0.52.0"))
+        .package(url: "https://github.com/vapor/vapor.git", .upToNextMajor(from: "4.0.0"))
     ],
     targets: [
         .target(
@@ -28,16 +27,17 @@ let package = Package(
                     ],
                     .when(configuration: .debug)
                 )
-            ],
-            plugins: [
-                .plugin(name: "SwiftLintPlugin", package: "SwiftLint")
             ]
         ),
         .executableTarget(name: "Run", dependencies: [.target(name: "App")]),
-        .testTarget(name: "AppTests", dependencies: [
-            .target(name: "App"),
-            .product(name: "XCTVapor", package: "vapor")
-        ])
+        .testTarget(
+            name: "AppTests",
+            dependencies:
+                [
+                    .target(name: "App"),
+                    .product(name: "XCTVapor", package: "vapor")
+                ]
+        )
     ]
 )
 
