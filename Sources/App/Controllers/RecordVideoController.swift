@@ -21,8 +21,9 @@ struct RecordVideoController: RouteCollection {
         try RecordVideoRequestBody.validate(content: req)
         let body = try req.content.decode(RecordVideoRequestBody.self)
         do {
+            let testingFlag = body.isClone ? "--set testing " : ""
             req.application.logger.info("Start recording video with filename: \(body.fileName)")
-            let pid = try req.application.shell.runCommandWithReturn("xcrun simctl --set testing io \(body.udid) recordVideo --codec=h264 --force \(body.fileName).\(self.fileExtension) >/dev/null 2>&1 & echo $!")
+            let pid = try req.application.shell.runCommandWithReturn("xcrun simctl \(testingFlag)io \(body.udid) recordVideo --codec=h264 --force \(body.fileName).\(self.fileExtension) >/dev/null 2>&1 & echo $!")
             return .init(pid: Int(pid)!)
         } catch {
             req.application.logger.report(error: error)

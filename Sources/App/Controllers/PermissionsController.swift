@@ -30,9 +30,10 @@ struct PermissionsController: RouteCollection {
     private func permissionHandler(req: Request, action: PermissionAction) async throws -> Response {
         try PermissionRequestBody.validate(content: req)
         let body = try req.content.decode(PermissionRequestBody.self)
+        let testingFlag = body.isClone ? "--set testing " : ""
         req.application.logger.info("\(action.rawValue) permission: \(body.permission.rawValue)")
         req.application.shell.run(
-            "xcrun simctl --set testing privacy \(body.udid) \(action.rawValue) \(body.permission.rawValue) \(body.appBundleId)"
+            "xcrun simctl \(testingFlag)privacy \(body.udid) \(action.rawValue) \(body.permission.rawValue) \(body.appBundleId)"
         )
         return Response(status: .noContent)
     }

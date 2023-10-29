@@ -9,17 +9,21 @@ import Vapor
 /// A request body for opening a URL on a simulator.
 /// - Note: The `simulatorUDID` property is optional, as it is not required for all requests.
 struct OpenURLRequestBody: Content, SimulatorID {
-  /// The URL to open.
-  let urlToOpen: URL
-
-  /// The UUID of the simulator to open the URL on.
-  var simulatorUDID: UUID?
+    /// The URL to open.
+    let urlToOpen: URL
+    
+    /// The UUID of the simulator to open the URL on.
+    var simulatorUDID: UUID?
+    
+    /// A boolean value indicating whether the simulator is a clone.
+    var isClone: Bool
 }
 
 extension OpenURLRequestBody: Validatable {
-  /// Adds validations for the `urlToOpen` and `simulatorUDID` properties.
-  static func validations(_ validations: inout Vapor.Validations) {
-    validations.add("urlToOpen", as: String.self, is: !.empty && .url)
-    validations.add("simulatorUDID", as: UUID?.self, is: .nil || !.nil, required: false)
-  }
+    /// Adds validations for the `urlToOpen` and `simulatorUDID` properties.
+    static func validations(_ validations: inout Vapor.Validations) {
+        validations.add("urlToOpen", as: String.self, is: !.empty && .url)
+        validations.add("simulatorUDID", as: UUID?.self, is: .nil || !.nil, required: false)
+        validations.add("isClone", as: Bool.self)
+    }
 }

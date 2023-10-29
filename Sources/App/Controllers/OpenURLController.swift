@@ -17,7 +17,8 @@ struct OpenURLController: RouteCollection {
         try OpenURLRequestBody.validate(content: req)
         let body = try req.content.decode(OpenURLRequestBody.self)
         req.application.logger.info("Opening url: \(body.urlToOpen)")
-        req.application.shell.run("xcrun simctl --set testing openurl \(body.udid) \"\(body.urlToOpen)\"")
+        let testingFlag = body.isClone ? "--set testing " : ""
+        req.application.shell.run("xcrun simctl \(testingFlag)openurl \(body.udid) \"\(body.urlToOpen)\"")
         return Response(status: .noContent)
     }
 }

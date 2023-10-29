@@ -28,22 +28,21 @@ struct PermissionRequestBody: Content, SimulatorID {
     
     /// The UUID of the simulator to record the video from.
     var simulatorUDID: UUID?
+    
+    /// A boolean value indicating whether the simulator is a clone.
+    var isClone: Bool
 }
 
 extension PermissionRequestBody: Validatable {
     static func validations(_ validations: inout Vapor.Validations) {
-        // Validate the permission property
         validations.add(
             "permission",
             as: String.self,
             is: .in(PermissionRequestBody.Permission.allCases.map { $0.rawValue }),
             required: true
         )
-        
-        // Validate appBundleId property
         validations.add("appBundleId", as: String.self, is: !.empty, required: true)
-        
-        // Validate the simulatorUDID property
         validations.add("simulatorUDID", as: UUID?.self, is: .nil || !.nil, required: false)
+        validations.add("isClone", as: Bool.self)
     }
 }

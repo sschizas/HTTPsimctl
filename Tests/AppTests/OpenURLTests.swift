@@ -21,10 +21,33 @@ final class OpenURLTests: XCTestCase {
     }
     
     // MARK: Tests
-    func testPostSuccessWithoutSimulatorUDID() throws {
+    func testPostSuccessWithoutSimulatorUDIDNonClone() throws {
         // Given
         let shellSpy = ShellableSpy()
-        let body = OpenURLRequestBody(urlToOpen: URL(string: "com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas")!)
+        let body = OpenURLRequestBody(
+            urlToOpen: URL(string: "com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas")!,
+            isClone: false
+        )
+        self.app.shell = shellSpy
+
+        // When
+        try app.test(.POST, openURLURI, beforeRequest: { request in
+            try request.content.encode(body, as: .json)
+        }, afterResponse: { response in
+            // Then
+            XCTAssertEqual(response.status, .noContent)
+            XCTAssertEqual(shellSpy.invokedRunCommandCount, 1)
+            XCTAssertEqual(shellSpy.invokedRunCommandParameters.command, "xcrun simctl openurl booted \"com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas\"")
+        })
+    }
+    
+    func testPostSuccessWithoutSimulatorUDIDClone() throws {
+        // Given
+        let shellSpy = ShellableSpy()
+        let body = OpenURLRequestBody(
+            urlToOpen: URL(string: "com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas")!,
+            isClone: true
+        )
         self.app.shell = shellSpy
 
         // When
@@ -38,13 +61,36 @@ final class OpenURLTests: XCTestCase {
         })
     }
     
-    func testPostSuccessWithSimulatorUDID() throws {
+    func testPostSuccessWithSimulatorUDIDNonClone() throws {
         // Given
         let uuid = UUID()
         let shellSpy = ShellableSpy()
         let body = OpenURLRequestBody(
             urlToOpen: URL(string: "com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas")!,
-            simulatorUDID: uuid
+            simulatorUDID: uuid, 
+            isClone: false
+        )
+        self.app.shell = shellSpy
+        
+        // When
+        try app.test(.POST, openURLURI, beforeRequest: { request in
+            try request.content.encode(body, as: .json)
+        }, afterResponse: { response in
+            // Then
+            XCTAssertEqual(response.status, .noContent)
+            XCTAssertEqual(shellSpy.invokedRunCommandCount, 1)
+            XCTAssertEqual(shellSpy.invokedRunCommandParameters.command, "xcrun simctl openurl \(uuid.uuidString) \"com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas\"")
+        })
+    }
+    
+    func testPostSuccessWithSimulatorUDIDClone() throws {
+        // Given
+        let uuid = UUID()
+        let shellSpy = ShellableSpy()
+        let body = OpenURLRequestBody(
+            urlToOpen: URL(string: "com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas")!,
+            simulatorUDID: uuid,
+            isClone: true
         )
         self.app.shell = shellSpy
         
