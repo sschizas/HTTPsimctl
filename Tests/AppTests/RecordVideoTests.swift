@@ -26,16 +26,15 @@ final class RecordVideoTests: XCTestCase {
         let body = RecordVideoRequestBody(fileName: "foo", isClone: false)
         self.app.shell = shellSpy
         shellSpy.stubbedRunCommandWithReturn = pid.description
-        shellSpy.stubbedIsProcessRunning = false
+        shellSpy.stubbedIsProcessRunning = ProcessStatus.terminated
+        _ = self.app.cache.set("foo", to: "\(pid)")
         
         // When
         try app.test(.POST, "/record-video/start", beforeRequest: { request in
             try request.content.encode(body, as: .json)
         }, afterResponse: { response in
             // Then
-            let responseBody = try response.content.decode(RecordVideoResponse.self)
             XCTAssertEqual(response.status, .ok)
-            XCTAssertEqual(responseBody.pid, pid)
             XCTAssertEqual(shellSpy.invokedRunCommandWithReturnCount, 1)
             XCTAssertEqual(shellSpy.invokedRunCommandWithReturnParameters.command, "xcrun simctl io booted recordVideo --codec=h264 --force foo.mp4 >/dev/null 2>&1 & echo $!")
         })
@@ -48,16 +47,15 @@ final class RecordVideoTests: XCTestCase {
         let body = RecordVideoRequestBody(fileName: "foo", isClone: true)
         self.app.shell = shellSpy
         shellSpy.stubbedRunCommandWithReturn = pid.description
-        shellSpy.stubbedIsProcessRunning = false
+        shellSpy.stubbedIsProcessRunning = ProcessStatus.terminated
+        _ = self.app.cache.set("foo", to: "\(pid)")
         
         // When
         try app.test(.POST, "/record-video/start", beforeRequest: { request in
             try request.content.encode(body, as: .json)
         }, afterResponse: { response in
             // Then
-            let responseBody = try response.content.decode(RecordVideoResponse.self)
             XCTAssertEqual(response.status, .ok)
-            XCTAssertEqual(responseBody.pid, pid)
             XCTAssertEqual(shellSpy.invokedRunCommandWithReturnCount, 1)
             XCTAssertEqual(shellSpy.invokedRunCommandWithReturnParameters.command, "xcrun simctl --set testing io booted recordVideo --codec=h264 --force foo.mp4 >/dev/null 2>&1 & echo $!")
         })
@@ -77,9 +75,7 @@ final class RecordVideoTests: XCTestCase {
             try request.content.encode(body, as: .json)
         }, afterResponse: { response in
             // Then
-            let responseBody = try response.content.decode(RecordVideoResponse.self)
             XCTAssertEqual(response.status, .ok)
-            XCTAssertEqual(responseBody.pid, pid)
             XCTAssertEqual(shellSpy.invokedRunCommandWithReturnCount, 1)
             XCTAssertEqual(shellSpy.invokedRunCommandWithReturnParameters.command, "xcrun simctl io \(uuid.uuidString) recordVideo --codec=h264 --force foo.mp4 >/dev/null 2>&1 & echo $!")
         })

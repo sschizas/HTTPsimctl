@@ -7,7 +7,7 @@ try LoggingSystem.bootstrap(from: &env)
 let app = Application(env)
 
 app.servers.use(.http)
-app.http.server.configuration.port = 1337
+app.http.server.configuration.port = 9000
 // Enable HTTP response compression.
 app.http.server.configuration.responseCompression = .enabled(initialByteBufferCapacity: 1024)
 // Enable HTTP request decompression.

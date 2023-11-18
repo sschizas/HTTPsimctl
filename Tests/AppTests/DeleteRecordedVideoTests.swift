@@ -25,10 +25,11 @@ final class DeleteRecordedVideoTests: XCTestCase {
         let pid = 12_352
         let filepath = "foo4"
         let shellSpy = ShellableSpy()
-        let body = StopRecordingVideoRequestBody(pid: pid, fileName: filepath)
+        let body = StopRecordingVideoRequestBody(fileName: filepath)
         self.app.shell = shellSpy
-        shellSpy.stubbedIsProcessRunning = false
+        shellSpy.stubbedIsProcessRunning = ProcessStatus.terminated
         shellSpy.stubbedRunCommandWithReturn = filepath
+        _ = self.app.cache.set(filepath, to: "\(pid)")
         
         // When
         try app.test(.DELETE, "/record-video", beforeRequest: { request in

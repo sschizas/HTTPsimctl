@@ -32,7 +32,7 @@ struct PermissionsController: RouteCollection {
         let body = try req.content.decode(PermissionRequestBody.self)
         let testingFlag = body.isClone ? "--set testing " : ""
         req.application.logger.info("\(action.rawValue) permission: \(body.permission.rawValue)")
-        req.application.shell.run(
+        try req.application.shell.run(
             "xcrun simctl \(testingFlag)privacy \(body.udid) \(action.rawValue) \(body.permission.rawValue) \(body.appBundleId)"
         )
         return Response(status: .noContent)

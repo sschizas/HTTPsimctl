@@ -33,9 +33,9 @@ final class ShellableSpy: Shellable {
     
     var invokedIsProcessRunning = false
     var invokedIsProcessRunningCount = 0
-    var invokedIsProcessRunningParameters: (pid: Int32, Void)!
-    var stubbedIsProcessRunning = false
-    func isProcessRunning(pid: Int32) -> Bool {
+    var invokedIsProcessRunningParameters: (pid: String, Void)!
+    var stubbedIsProcessRunning = ProcessStatus.running
+    func isProcessRunning(pid: String) -> ProcessStatus {
         self.invokedIsProcessRunning = true
         self.invokedIsProcessRunningCount += 1
         self.invokedIsProcessRunningParameters = (pid, ())

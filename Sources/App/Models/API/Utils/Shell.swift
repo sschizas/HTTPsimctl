@@ -13,7 +13,8 @@ public protocol Shellable {
     /// Runs a shell command without returning any result.
     ///
     /// - Parameter command: The shell command to execute.
-    func run(_ command: String)
+    /// - Throws: An error if the command execution fails.
+    func run(_ command: String) throws
     
     /// Runs a shell command and returns the output as a string.
     ///
@@ -27,7 +28,13 @@ public protocol Shellable {
     ///
     /// - Parameter pid: The process ID (PID) to check.
     /// - Returns: `true` if the process is running, `false` otherwise.
-    func isProcessRunning(pid: Int32) -> Bool
+    func isProcessRunning(pid: String) -> ProcessStatus
+}
+
+public enum ProcessStatus {
+    case running
+    case terminated
+    case error
 }
 
 struct ShellKey: StorageKey {
@@ -41,23 +48,21 @@ final class Shell: Shellable {
         case shellOutputFailed
     }
     
-    func run(_ command: String) {
+    func run(_ command: String) throws {
         let task = Process()
         task.arguments = ["-c", command]
         task.launchPath = "/bin/bash"
-        task.launch()
+        try task.run()
     }
     
     @discardableResult
     func runCommandWithReturn(_ command: String) throws -> String {
         let task = Process()
         let pipe = Pipe()
-        
         task.standardOutput = pipe
         task.arguments = ["-c", command]
         task.launchPath = "/bin/bash"
-        task.launch()
-        
+        try task.run()
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         task.waitUntilExit()
         let string = String(data: data, encoding: .utf8)
@@ -67,14 +72,21 @@ final class Shell: Shellable {
         return output
     }
     
-    func isProcessRunning(pid: Int32) -> Bool {
-        let task = Process()
-        task.launchPath = "/bin/ps"
-        task.arguments = ["-p", "\(pid)"]
-        task.standardOutput = Pipe()
-        task.launch()
-        task.waitUntilExit()
-        return task.terminationStatus == 0
+    func isProcessRunning(pid: String) -> ProcessStatus {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/kill") // You can use any executable you prefer
+        process.arguments = ["-0", "\(pid)"]
+        do {
+            try process.run()
+            process.waitUntilExit()
+            if process.terminationStatus == 0 {
+                return .running
+            } else {
+                return .terminated
+            }
+        } catch {
+            return .error
+        }
     }
 }
 

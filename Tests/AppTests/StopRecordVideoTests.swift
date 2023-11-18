@@ -25,10 +25,11 @@ final class StopRecordVideoTests: XCTestCase {
         let pid = 12_352
         let filepath = "foo4"
         let shellSpy = ShellableSpy()
-        let body = StopRecordingVideoRequestBody(pid: pid, fileName: filepath)
+        let body = StopRecordingVideoRequestBody(fileName: filepath)
         self.app.shell = shellSpy
-        shellSpy.stubbedIsProcessRunning = false
+        shellSpy.stubbedIsProcessRunning = ProcessStatus.terminated
         shellSpy.stubbedRunCommandWithReturn = filepath
+        _ = self.app.cache.set(filepath, to: "\(pid)")
         
         // When
         try app.test(.POST, "/record-video/stop", beforeRequest: { request in
@@ -50,10 +51,11 @@ final class StopRecordVideoTests: XCTestCase {
         let pid = 12_352
         let filepath = ""
         let shellSpy = ShellableSpy()
-        let body = StopRecordingVideoRequestBody(pid: pid, fileName: filepath)
+        let body = StopRecordingVideoRequestBody(fileName: filepath)
         self.app.shell = shellSpy
-        shellSpy.stubbedIsProcessRunning = false
+        shellSpy.stubbedIsProcessRunning = ProcessStatus.terminated
         shellSpy.stubbedRunCommandWithReturn = filepath
+        _ = self.app.cache.set(filepath, to: "\(pid)")
         
         // When
         try app.test(.POST, "/record-video/stop", beforeRequest: { request in
