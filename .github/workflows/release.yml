@@ -37,7 +37,7 @@ jobs:
           mv Run httpsimctl
           tar -czf httpsimctl.tar.gz ./httpsimctl
       - name: Upload zip binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: httpsimctl.tar.gz
           path: .build/apple/Products/Release/httpsimctl.tar.gz
