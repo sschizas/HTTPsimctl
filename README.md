@@ -38,7 +38,7 @@ You have two options for manual installation:
 - [x] Record videos of booted simulators.
 - [x] Support installation via Homebrew.
 - [ ] Support sending APNS.
-- [ ] Grant/revoke app permissions.
+- [x] Grant/revoke app permissions.
 
 ## Built With
 
