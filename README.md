@@ -7,7 +7,7 @@ A command-line tool written in Swift/Vapor for interacting with iOS Simulators v
 
 ## Requirements
 
-- Swift 5.8+
+- Swift 5.10+
 
 ## Installation
 
@@ -37,7 +37,7 @@ You have two options for manual installation:
 - [x] Open urls.
 - [x] Record videos of booted simulators.
 - [x] Support installation via Homebrew.
-- [ ] Support sending APNS.
+- [x] Support sending APNS.
 - [x] Grant/revoke app permissions.
 
 ## Built With

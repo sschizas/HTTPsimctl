@@ -9,4 +9,7 @@ func routes(_ app: Application) throws {
     
     let permissionsController = PermissionsController()
     try app.register(collection: permissionsController)
+    
+    let apnsController = APNSController()
+    try app.register(collection: apnsController)
 }

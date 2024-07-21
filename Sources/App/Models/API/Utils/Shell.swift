@@ -88,6 +88,23 @@ final class Shell: Shellable {
             return .error
         }
     }
+    
+    func run(pid: String) -> ProcessStatus {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/kill") // You can use any executable you prefer
+        process.arguments = ["-0", "\(pid)"]
+        do {
+            try process.run()
+            process.waitUntilExit()
+            if process.terminationStatus == 0 {
+                return .running
+            } else {
+                return .terminated
+            }
+        } catch {
+            return .error
+        }
+    }
 }
 
 extension Application {

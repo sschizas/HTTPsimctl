@@ -18,6 +18,6 @@ public struct VersionCommand: Command {
     public init() {}
     
     public func run(using context: CommandContext, signature: Signature) throws {
-        context.console.print("HTTPsimctl v1.0.0")
+        context.console.print("HTTPsimctl v1.5.0")
     }
 }
