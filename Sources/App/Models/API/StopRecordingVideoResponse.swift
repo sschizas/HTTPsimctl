@@ -10,13 +10,13 @@ import Vapor
 ///
 /// The response contains the file path where the recorded video is stored.
 struct StopRecordingVideoResponse: Content {
-  /// The file path where the recorded video is stored.
-  let filePath: String
+    /// The file path where the recorded video is stored.
+    let filePath: String
 }
 
 extension StopRecordingVideoResponse: Validatable {
-  /// Adds validation rules for the `filePath` property.
-  static func validations(_ validations: inout Vapor.Validations) {
-    validations.add("filePath", as: String.self)
-  }
+    /// Adds validation rules for the `filePath` property.
+    static func validations(_ validations: inout Vapor.Validations) {
+        validations.add("filePath", as: String.self)
+    }
 }

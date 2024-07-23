@@ -11,17 +11,15 @@ import Vapor
 /// Conforming types can use this protocol to get a `simulatorUDID` property.
 /// - Note: The `simulatorUDID` property is optional, so conforming types can choose to not implement it.
 public protocol SimulatorID {
-  /// The UUID of the simulator.
-  var simulatorUDID: UUID? { get set }
+    /// The UUID of the simulator.
+    var simulatorUDID: UUID? { get set }
 }
 
 extension SimulatorID {
-  /**
-   A computed property that returns the UUID of the simulator, or "booted" if the UUID is nil.
-
-   - Returns: A string representation of the simulator UUID, or "booted" if the UUID is nil.
-   */
-  var udid: String {
-      self.simulatorUDID?.uuidString ?? "booted"
-  }
+    ///  A computed property that returns the UUID of the simulator, or "booted" if the UUID is nil.
+    ///
+    /// - Returns: A string representation of the simulator UUID, or "booted" if the UUID is nil.
+    var udid: String {
+        self.simulatorUDID?.uuidString ?? "booted"
+    }
 }

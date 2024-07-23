@@ -29,7 +29,6 @@ struct RecordVideoController: RouteCollection {
             let testingFlag = body.isClone ? "--set testing " : ""
             req.application.logger.info("Start recording video with filename: \(body.fileName)")
             let pid = try req.application.shell.runCommandWithReturn("xcrun simctl \(testingFlag)io \(body.udid) recordVideo --codec=h264 --force \(body.fileName).\(self.fileExtension) >/dev/null 2>&1 & echo $!")
-            print("FooA: \(pid)")
             try await req.cache.set(body.fileName, to: pid)
             return Response(status: .ok)
         } catch {
@@ -45,7 +44,6 @@ struct RecordVideoController: RouteCollection {
             guard let pid: String = try await req.cache.get(body.fileName) else {
                 throw Abort(HTTPResponseStatus.internalServerError, reason: "PID for \(body.fileName) not found in cache.")
             }
-            print("FooB: \(pid)")
             try await self.terminatePID(req, body, pid)
             let filepath = try req.application.shell.runCommandWithReturn("realpath \(body.fileName).\(self.fileExtension)").trimmingCharacters(in: .whitespacesAndNewlines)
             return StopRecordingVideoResponse(filePath: filepath)
@@ -61,7 +59,6 @@ struct RecordVideoController: RouteCollection {
         guard let pid: String = try await req.cache.get(body.fileName) else {
             throw Abort(HTTPResponseStatus.internalServerError, reason: "PID for \(body.fileName) not found in cache.")
         }
-        print("FooC: \(pid)")
         try await self.terminatePID(req, body, pid)
         req.application.logger.info("Delete video with filename: \(body.fileName)")
         try req.application.shell.run("rm \(body.fileName).\(self.fileExtension)")
@@ -75,14 +72,16 @@ struct RecordVideoController: RouteCollection {
         var status: ProcessStatus = .running
         while status == .running {
             status = req.application.shell.isProcessRunning(pid: pid)
-            try await Task.sleep(nanoseconds: 1000000000)
+            try await Task.sleep(nanoseconds: 1_000_000_000)
         }
         
         switch status {
         case .terminated:
             req.application.logger.info("Process with PID \(pid) has terminated.")
+
         case .error:
             req.application.logger.error("Error checking the process status for PID \(pid).")
+
         case .running:
             break
         }

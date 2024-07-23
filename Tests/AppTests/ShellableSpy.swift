@@ -23,11 +23,15 @@ final class ShellableSpy: Shellable {
     var invokedRunCommandWithReturnParameters: (command: String, Void)!
     var invokedRunCommandWithReturnParametersList = [(command: String, Void)]()
     var stubbedRunCommandWithReturn: String! = ""
+    var stubbedRunCommandError: Error?
     func runCommandWithReturn(_ command: String) throws -> String {
         self.invokedRunCommandWithReturn = true
         self.invokedRunCommandWithReturnCount += 1
         self.invokedRunCommandWithReturnParameters = (command, ())
         self.invokedRunCommandWithReturnParametersList.append((command, ()))
+        if let stubbedRunCommandError {
+            throw stubbedRunCommandError
+        }
         return self.stubbedRunCommandWithReturn
     }
     
