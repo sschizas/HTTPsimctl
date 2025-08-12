@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 1
       - uses: swift-actions/setup-swift@v2
@@ -36,7 +36,7 @@ jobs:
     name: Swiftlint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 1
       - uses: norio-nomura/action-swiftlint@3.2.1
@@ -45,7 +45,7 @@ jobs:
     name: 🚧 Danger
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: ruby/setup-ruby@v1
