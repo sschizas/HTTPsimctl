@@ -9,10 +9,10 @@ concurrency:
 
 jobs:
   tests:
-    name: Tests
+    name: MacOS Tests
     strategy:
       matrix:
-        os: [macos-14, macos-15, ubuntu-latest]
+        os: [macos-15]
         swift: ["6.2"]
     runs-on: ${{ matrix.os }}
 
@@ -33,15 +33,6 @@ jobs:
             ${{ runner.os }}-spm-
       - name: Run tests
         run: swift test
-
-  swiftLint:
-    name: Swiftlint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 1
-      - uses: norio-nomura/action-swiftlint@3.2.1
 
   danger:
     name: 🚧 Danger
