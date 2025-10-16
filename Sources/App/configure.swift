@@ -1,10 +1,9 @@
 import Vapor
 
-/// Configures your application by setting up necessary components and middleware.
-///
-/// - Parameter app: The `Application` instance representing your application.
-/// - Throws: An error if any configuration step fails.
-public func configure(_ app: Application) throws {
-    // Register routes for the application.
+public func configure(_ app: Application) async throws {
+    // uncomment to serve files from /Public folder
+    // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+
+    // register routes
     try routes(app)
 }

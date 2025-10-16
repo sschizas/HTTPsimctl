@@ -1,4 +1,3 @@
-[![Swift Version](https://img.shields.io/badge/Swift-5.8-brightgreen.svg)](http://swift.org)
 [![Vapor Version](https://img.shields.io/badge/Vapor-4-30B6FC.svg)](http://vapor.codes)
 
 # HTTPsimctl
@@ -7,7 +6,7 @@ A command-line tool written in Swift/Vapor for interacting with iOS Simulators v
 
 ## Requirements
 
-- Swift 5.10+
+- Swift 6.x
 
 ## Installation
 

@@ -6,7 +6,7 @@
 
 import App
 
-final class ShellableSpy: Shellable {
+final class ShellableSpy: Shellable, @unchecked Sendable {
     var invokedRunCommand = false
     var invokedRunCommandCount = 0
     var invokedRunCommandParameters: (command: String, Void)!
@@ -17,24 +17,24 @@ final class ShellableSpy: Shellable {
         self.invokedRunCommandParameters = (command, ())
         self.invokedRunCommandParametersList.append((command, ()))
     }
-    
+
     var invokedRunCommandWithReturn = false
     var invokedRunCommandWithReturnCount = 0
     var invokedRunCommandWithReturnParameters: (command: String, Void)!
-    var invokedRunCommandWithReturnParametersList = [(command: String, Void)]()
+    var invokedRunCommandWithReturnParamsList = [(command: String, Void)]()
     var stubbedRunCommandWithReturn: String! = ""
     var stubbedRunCommandError: Error?
     func runCommandWithReturn(_ command: String) throws -> String {
         self.invokedRunCommandWithReturn = true
         self.invokedRunCommandWithReturnCount += 1
         self.invokedRunCommandWithReturnParameters = (command, ())
-        self.invokedRunCommandWithReturnParametersList.append((command, ()))
+        self.invokedRunCommandWithReturnParamsList.append((command, ()))
         if let stubbedRunCommandError {
             throw stubbedRunCommandError
         }
         return self.stubbedRunCommandWithReturn
     }
-    
+
     var invokedIsProcessRunning = false
     var invokedIsProcessRunningCount = 0
     var invokedIsProcessRunningParameters: (pid: String, Void)!

@@ -7,41 +7,41 @@
 import Vapor
 
 struct APNSController: RouteCollection {
-    func boot(routes: Vapor.RoutesBuilder) throws {
+    func boot(routes: any Vapor.RoutesBuilder) throws {
         let routesGroup = routes.grouped("apns")
         routesGroup.post(use: openURL)
     }
-    
+
     // MARK: Handlers
     private func openURL(req: Request) async throws -> Response {
         try APNSRequestBody.validate(content: req)
         let body = try req.content.decode(APNSRequestBody.self)
         req.application.logger.info("Sending APNS: \(body.apns)")
         let testingFlag = body.isClone ? "--set testing " : ""
-        
+
         // Create a temporary file to store the JSON payload
         let tempDirectory = FileManager.default.temporaryDirectory
         let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("json")
-        
+
         do {
             // Write the JSON payload to the temporary file
             try body.apns.unescapedJSONString().write(to: tempFileURL, atomically: true, encoding: .utf8)
-            
+
             // Log the file path
             req.application.logger.info("Temporary file created at: \(tempFileURL.path)")
-            
+
             // Construct the command to use the temporary file
             let command = "/usr/bin/xcrun"
             let arguments = ["simctl", testingFlag + "push", "booted", body.appBundleId, tempFileURL.path]
-            
+
             // Log the command being executed
             req.application.logger.info("Executing command: \(command) \(arguments.joined(separator: " "))")
-            
+
             try req.application.shell.runCommandWithReturn("xcrun simctl \(testingFlag)push \(body.udid) \(body.appBundleId) \(tempFileURL.path)")
-            
+
             // Clean up the temporary file
             try FileManager.default.removeItem(at: tempFileURL)
-            
+
             return Response(status: .noContent)
         } catch {
             // Log the error
@@ -59,7 +59,7 @@ extension String {
             print("Error: Cannot convert string to UTF-8 data.")
             return self
         }
-        
+
         do {
             // Deserialize the JSON string into an object
             let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: .fragmentsAllowed)

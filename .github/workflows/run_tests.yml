@@ -9,20 +9,22 @@ concurrency:
 
 jobs:
   tests:
-    name: Tests
+    name: MacOS Tests
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-13, macos-14]
-        swift: ["5.10"]
+        os: [macos-15]
+        swift: ["6.2"]
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 1
-      - uses: swift-actions/setup-swift@v2
+      - uses: swift-actions/setup-swift@65540b95f51493d65f5e59e97dcef9629ddf11bf
         with:
           swift-version: ${{ matrix.swift }}
+      - name: Get swift version
+        run: swift --version
       - uses: actions/cache@v4
         with:
           path: .build
@@ -32,20 +34,11 @@ jobs:
       - name: Run tests
         run: swift test
 
-  swiftLint:
-    name: Swiftlint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      - uses: norio-nomura/action-swiftlint@3.2.1
-
   danger:
     name: 🚧 Danger
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: ruby/setup-ruby@v1

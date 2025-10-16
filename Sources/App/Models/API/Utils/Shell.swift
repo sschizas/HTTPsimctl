@@ -9,13 +9,13 @@ import Foundation
 import Vapor
 
 /// A protocol defining methods to interact with the shell or command-line interface.
-public protocol Shellable {
+public protocol Shellable: Sendable {
     /// Runs a shell command without returning any result.
     ///
     /// - Parameter command: The shell command to execute.
     /// - Throws: An error if the command execution fails.
     func run(_ command: String) throws
-    
+
     /// Runs a shell command and returns the output as a string.
     ///
     /// - Parameter command: The shell command to execute.
@@ -23,7 +23,7 @@ public protocol Shellable {
     /// - Throws: An error if the command execution fails.
     @discardableResult
     func runCommandWithReturn(_ command: String) throws -> String
-    
+
     /// Checks if a process with the given process ID (PID) is currently running.
     ///
     /// - Parameter pid: The process ID (PID) to check.
@@ -43,18 +43,18 @@ struct ShellKey: StorageKey {
 
 final class Shell: Shellable {
     typealias Value = Shell
-    
+
     enum Error: Swift.Error {
         case shellOutputFailed
     }
-    
+
     func run(_ command: String) throws {
         let task = Process()
         task.arguments = ["-c", command]
         task.launchPath = "/bin/bash"
         try task.run()
     }
-    
+
     @discardableResult
     func runCommandWithReturn(_ command: String) throws -> String {
         let task = Process()
@@ -71,7 +71,7 @@ final class Shell: Shellable {
         }
         return output
     }
-    
+
     func isProcessRunning(pid: String) -> ProcessStatus {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/bin/kill") // You can use any executable you prefer
@@ -88,7 +88,7 @@ final class Shell: Shellable {
             return .error
         }
     }
-    
+
     func run(pid: String) -> ProcessStatus {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/bin/kill") // You can use any executable you prefer
@@ -120,14 +120,14 @@ extension Application {
 
 extension Shell.Error: AbortError {
     var description: String { reason }
-    
+
     var status: HTTPResponseStatus {
         switch self {
         case .shellOutputFailed:
             return .internalServerError
         }
     }
-    
+
     var reason: String {
         switch self {
         case .shellOutputFailed:
