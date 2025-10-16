@@ -7,7 +7,7 @@
 import Vapor
 
 struct OpenURLController: RouteCollection {
-    func boot(routes: Vapor.RoutesBuilder) throws {
+    func boot(routes: any Vapor.RoutesBuilder) throws {
         let routesGroup = routes.grouped("open-url")
         routesGroup.post(use: openURL)
     }

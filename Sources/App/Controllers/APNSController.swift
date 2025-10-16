@@ -7,7 +7,7 @@
 import Vapor
 
 struct APNSController: RouteCollection {
-    func boot(routes: Vapor.RoutesBuilder) throws {
+    func boot(routes: any Vapor.RoutesBuilder) throws {
         let routesGroup = routes.grouped("apns")
         routesGroup.post(use: openURL)
     }

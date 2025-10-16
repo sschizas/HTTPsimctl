@@ -8,10 +8,10 @@ let package = Package(
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
-        .package(url: "https://github.com/vapor/vapor.git", .upToNextMajor(from: "4.0.0"))
+        .package(url: "https://github.com/vapor/vapor.git", from: "4.115.0")
     ],
     targets: [
-        .target(
+        .executableTarget(
             name: "App",
             dependencies: [
                 .product(name: "Vapor", package: "vapor")
@@ -26,17 +26,16 @@ let package = Package(
                         "-warn-long-expression-type-checking=20"
                     ],
                     .when(configuration: .debug)
-                )
+                ),
+                .enableUpcomingFeature("ExistentialAny")
             ]
         ),
-        .executableTarget(name: "Run", dependencies: [.target(name: "App")]),
         .testTarget(
             name: "AppTests",
-            dependencies:
-                [
-                    .target(name: "App"),
-                    .product(name: "XCTVapor", package: "vapor")
-                ]
+            dependencies: [
+                .target(name: "App"),
+                .product(name: "VaporTesting", package: "vapor")
+            ]
         )
     ]
 )

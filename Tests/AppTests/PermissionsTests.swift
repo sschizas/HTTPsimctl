@@ -5,199 +5,225 @@
 //
 
 @testable import App
-import XCTVapor
+import VaporTesting
+import Testing
 
-final class PermissionsTests: XCTestCase {
-    var app: Application!
+@Suite("Permissions Tests")
+struct PermissionsTests {
 
-    override func setUp() {
-        self.app = try! Application.testable()
+    @Test("Grant Permission Bad Request Missing Permission")
+    func grantPermissionBadRequestMissingPermission() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            app.shell = shellSpy
+
+            // When
+            try await app.testing().test(.POST, "/permission/grant", beforeRequest: { request in
+                try request.content.encode(["appBundleId": "sdsdsds"])
+            }, afterResponse: { response async in
+                // Then
+                #expect(!shellSpy.invokedRunCommandWithReturn)
+                #expect(response.status == .badRequest)
+            })
+        }
     }
 
-    override func tearDown() {
-        self.app.shutdown()
+    @Test("Revoke Permission Bad Request Missing Permission")
+    func revokePermissionBadRequestMissingPermission() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            app.shell = shellSpy
+
+            // When
+            try await app.testing().test(.POST, "/permission/revoke", beforeRequest: { request in
+                try request.content.encode(["appBundleId": "sdsdsds"])
+            }, afterResponse: { response async in
+                // Then
+                #expect(!shellSpy.invokedRunCommandWithReturn)
+                #expect(response.status == .badRequest)
+            })
+        }
     }
 
-    // MARK: Tests
-    func testGrantPermissionBadRequestMissingPermission() throws {
-        // Given
-        let shellSpy = ShellableSpy()
-        self.app.shell = shellSpy
+    @Test("Grant Permission Bad Request Unknown Permission")
+    func grantPermissionBadRequestUnknownPermission() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            app.shell = shellSpy
 
-        // When
-        try app.test(.POST, "/permission/grant", beforeRequest: { request in
-            try request.content.encode(["appBundleId": "sdsdsds"])
-        }, afterResponse: { response in
-            // Then
-            XCTAssertFalse(shellSpy.invokedRunCommandWithReturn)
-            XCTAssertEqual(response.status, .badRequest)
-        })
+            // When
+            try await app.testing().test(.POST, "/permission/grant", beforeRequest: { request in
+                try request.content.encode(["appBundleId": "sdsdsds", "permission": "test"])
+            }, afterResponse: { response async in
+                // Then
+                #expect(!shellSpy.invokedRunCommandWithReturn)
+                #expect(response.status == .badRequest)
+            })
+        }
     }
 
-    func testRevokePermissionBadRequestMissingPermission() throws {
-        // Given
-        let shellSpy = ShellableSpy()
-        self.app.shell = shellSpy
+    @Test("Revoke Permission Bad Request Unknown Permission")
+    func revokePermissionBadRequestUnknownPermission() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            app.shell = shellSpy
 
-        // When
-        try app.test(.POST, "/permission/revoke", beforeRequest: { request in
-            try request.content.encode(["appBundleId": "sdsdsds"])
-        }, afterResponse: { response in
-            // Then
-            XCTAssertFalse(shellSpy.invokedRunCommandWithReturn)
-            XCTAssertEqual(response.status, .badRequest)
-        })
+            // When
+            try await app.testing().test(.POST, "/permission/revoke", beforeRequest: { request in
+                try request.content.encode(["appBundleId": "sdsdsds", "permission": "test"])
+            }, afterResponse: { response async in
+                // Then
+                #expect(!shellSpy.invokedRunCommandWithReturn)
+                #expect(response.status == .badRequest)
+            })
+        }
     }
 
-    func testGrantPermissionBadRequestUnknownPermission() throws {
-        // Given
-        let shellSpy = ShellableSpy()
-        self.app.shell = shellSpy
+    @Test("Grant Permission Bad Request Missing App Bundle ID")
+    func grantPermissionBadRequestMissingAppBundleID() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            app.shell = shellSpy
 
-        // When
-        try app.test(.POST, "/permission/grant", beforeRequest: { request in
-            try request.content.encode(["appBundleId": "sdsdsds", "permission": "test"])
-        }, afterResponse: { response in
-            // Then
-            XCTAssertFalse(shellSpy.invokedRunCommandWithReturn)
-            XCTAssertEqual(response.status, .badRequest)
-        })
+            // When
+            try await app.testing().test(.POST, "/permission/grant", beforeRequest: { request in
+                try request.content.encode(["permission": "test"])
+            }, afterResponse: { response async in
+                // Then
+                #expect(!shellSpy.invokedRunCommandWithReturn)
+                #expect(response.status == .badRequest)
+            })
+        }
     }
 
-    func testRevokePermissionBadRequestUnknownPermission() throws {
-        // Given
-        let shellSpy = ShellableSpy()
-        self.app.shell = shellSpy
+    @Test("Revoke Permission Bad Request Missing App Bundle ID")
+    func revokePermissionBadRequestMissingAppBundleID() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            app.shell = shellSpy
 
-        // When
-        try app.test(.POST, "/permission/revoke", beforeRequest: { request in
-            try request.content.encode(["appBundleId": "sdsdsds", "permission": "test"])
-        }, afterResponse: { response in
-            // Then
-            XCTAssertFalse(shellSpy.invokedRunCommandWithReturn)
-            XCTAssertEqual(response.status, .badRequest)
-        })
+            // When
+            try await app.testing().test(.POST, "/permission/revoke", beforeRequest: { request in
+                try request.content.encode(["permission": "test"])
+            }, afterResponse: { response async in
+                // Then
+                #expect(!shellSpy.invokedRunCommandWithReturn)
+                #expect(response.status == .badRequest)
+            })
+        }
     }
 
-    func testGrantPermissionBadRequestMissingAppBundleID() throws {
-        // Given
-        let shellSpy = ShellableSpy()
-        self.app.shell = shellSpy
+    @Test("Grant Permission Non Clone")
+    func grantPermissionNonClone() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            app.shell = shellSpy
+            let uuid = UUID()
 
-        // When
-        try app.test(.POST, "/permission/grant", beforeRequest: { request in
-            try request.content.encode(["permission": "test"])
-        }, afterResponse: { response in
-            // Then
-            XCTAssertFalse(shellSpy.invokedRunCommandWithReturn)
-            XCTAssertEqual(response.status, .badRequest)
-        })
+            // When
+            let body = PermissionRequestBody(
+                permission: PermissionRequestBody.Permission.addPhotos,
+                appBundleId: "sdsdsds",
+                simulatorUDID: uuid,
+                isClone: false
+            )
+            try await app.testing().test(.POST, "/permission/grant", beforeRequest: { request in
+                try request.content.encode(body, as: .json)
+            }, afterResponse: { response async in
+                // Then
+                #expect(response.status == .noContent)
+                #expect(shellSpy.invokedRunCommandCount == 1)
+                #expect(shellSpy.invokedRunCommandParameters.command == 
+                    "xcrun simctl privacy \(uuid.uuidString) grant photos-add sdsdsds")
+            })
+        }
     }
 
-    func testRevokePermissionBadRequestMissingAppBundleID() throws {
-        // Given
-        let shellSpy = ShellableSpy()
-        self.app.shell = shellSpy
+    @Test("Grant Permission Clone")
+    func grantPermissionClone() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            app.shell = shellSpy
+            let uuid = UUID()
 
-        // When
-        try app.test(.POST, "/permission/revoke", beforeRequest: { request in
-            try request.content.encode(["permission": "test"])
-        }, afterResponse: { response in
-            // Then
-            XCTAssertFalse(shellSpy.invokedRunCommandWithReturn)
-            XCTAssertEqual(response.status, .badRequest)
-        })
+            // When
+            let body = PermissionRequestBody(
+                permission: PermissionRequestBody.Permission.addPhotos,
+                appBundleId: "sdsdsds",
+                simulatorUDID: uuid,
+                isClone: true
+            )
+            try await app.testing().test(.POST, "/permission/grant", beforeRequest: { request in
+                try request.content.encode(body, as: .json)
+            }, afterResponse: { response async in
+                // Then
+                #expect(response.status == .noContent)
+                #expect(shellSpy.invokedRunCommandCount == 1)
+                #expect(shellSpy.invokedRunCommandParameters.command == 
+                    "xcrun simctl --set testing privacy \(uuid.uuidString) grant photos-add sdsdsds")
+            })
+        }
     }
 
-    func testGrantPermissionNonClone() throws {
-        // Given
-        let shellSpy = ShellableSpy()
-        self.app.shell = shellSpy
-        let uuid = UUID()
+    @Test("Revoke Permission Non Clone")
+    func revokePermissionNonClone() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            app.shell = shellSpy
+            let uuid = UUID()
 
-        // When
-        let body = PermissionRequestBody(
-            permission: PermissionRequestBody.Permission.addPhotos,
-            appBundleId: "sdsdsds",
-            simulatorUDID: uuid,
-            isClone: false
-        )
-        try app.test(.POST, "/permission/grant", beforeRequest: { request in
-            try request.content.encode(body, as: .json)
-        }, afterResponse: { response in
-            // Then
-            XCTAssertEqual(response.status, .noContent)
-            XCTAssertEqual(shellSpy.invokedRunCommandCount, 1)
-            XCTAssertEqual(shellSpy.invokedRunCommandParameters.command, "xcrun simctl privacy \(uuid.uuidString) grant photos-add sdsdsds")
-        })
+            // When
+            let body = PermissionRequestBody(
+                permission: PermissionRequestBody.Permission.addPhotos,
+                appBundleId: "sdsdsds",
+                simulatorUDID: uuid,
+                isClone: false
+            )
+            try await app.testing().test(.POST, "/permission/revoke", beforeRequest: { request in
+                try request.content.encode(body, as: .json)
+            }, afterResponse: { response async in
+                // Then
+                #expect(response.status == .noContent)
+                #expect(shellSpy.invokedRunCommandCount == 1)
+                #expect(shellSpy.invokedRunCommandParameters.command == 
+                    "xcrun simctl privacy \(uuid.uuidString) revoke photos-add sdsdsds")
+            })
+        }
     }
 
-    func testGrantPermissionClone() throws {
-        // Given
-        let shellSpy = ShellableSpy()
-        self.app.shell = shellSpy
-        let uuid = UUID()
+    @Test("Revoke Permission Clone")
+    func revokePermissionClone() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            app.shell = shellSpy
+            let uuid = UUID()
 
-        // When
-        let body = PermissionRequestBody(
-            permission: PermissionRequestBody.Permission.addPhotos,
-            appBundleId: "sdsdsds",
-            simulatorUDID: uuid,
-            isClone: true
-        )
-        try app.test(.POST, "/permission/grant", beforeRequest: { request in
-            try request.content.encode(body, as: .json)
-        }, afterResponse: { response in
-            // Then
-            XCTAssertEqual(response.status, .noContent)
-            XCTAssertEqual(shellSpy.invokedRunCommandCount, 1)
-            XCTAssertEqual(shellSpy.invokedRunCommandParameters.command, "xcrun simctl --set testing privacy \(uuid.uuidString) grant photos-add sdsdsds")
-        })
-    }
-
-    func testRevokePermissionNonClone() throws {
-        // Given
-        let shellSpy = ShellableSpy()
-        self.app.shell = shellSpy
-        let uuid = UUID()
-
-        // When
-        let body = PermissionRequestBody(
-            permission: PermissionRequestBody.Permission.addPhotos,
-            appBundleId: "sdsdsds",
-            simulatorUDID: uuid,
-            isClone: false
-        )
-        try app.test(.POST, "/permission/revoke", beforeRequest: { request in
-            try request.content.encode(body, as: .json)
-        }, afterResponse: { response in
-            // Then
-            XCTAssertEqual(response.status, .noContent)
-            XCTAssertEqual(shellSpy.invokedRunCommandCount, 1)
-            XCTAssertEqual(shellSpy.invokedRunCommandParameters.command, "xcrun simctl privacy \(uuid.uuidString) revoke photos-add sdsdsds")
-        })
-    }
-
-    func testRevokePermissionClone() throws {
-        // Given
-        let shellSpy = ShellableSpy()
-        self.app.shell = shellSpy
-        let uuid = UUID()
-
-        // When
-        let body = PermissionRequestBody(
-            permission: PermissionRequestBody.Permission.addPhotos,
-            appBundleId: "sdsdsds",
-            simulatorUDID: uuid,
-            isClone: true
-        )
-        try app.test(.POST, "/permission/revoke", beforeRequest: { request in
-            try request.content.encode(body, as: .json)
-        }, afterResponse: { response in
-            // Then
-            XCTAssertEqual(response.status, .noContent)
-            XCTAssertEqual(shellSpy.invokedRunCommandCount, 1)
-            XCTAssertEqual(shellSpy.invokedRunCommandParameters.command, "xcrun simctl --set testing privacy \(uuid.uuidString) revoke photos-add sdsdsds")
-        })
+            // When
+            let body = PermissionRequestBody(
+                permission: PermissionRequestBody.Permission.addPhotos,
+                appBundleId: "sdsdsds",
+                simulatorUDID: uuid,
+                isClone: true
+            )
+            try await app.testing().test(.POST, "/permission/revoke", beforeRequest: { request in
+                try request.content.encode(body, as: .json)
+            }, afterResponse: { response async in
+                // Then
+                #expect(response.status == .noContent)
+                #expect(shellSpy.invokedRunCommandCount == 1)
+                #expect(shellSpy.invokedRunCommandParameters.command == 
+                    "xcrun simctl --set testing privacy \(uuid.uuidString) revoke photos-add sdsdsds")
+            })
+        }
     }
 }

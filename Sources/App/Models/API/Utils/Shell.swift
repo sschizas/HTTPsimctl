@@ -9,7 +9,7 @@ import Foundation
 import Vapor
 
 /// A protocol defining methods to interact with the shell or command-line interface.
-public protocol Shellable {
+public protocol Shellable: Sendable {
     /// Runs a shell command without returning any result.
     ///
     /// - Parameter command: The shell command to execute.

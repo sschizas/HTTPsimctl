@@ -12,7 +12,7 @@ struct PermissionsController: RouteCollection {
         case revoke
     }
 
-    func boot(routes: Vapor.RoutesBuilder) throws {
+    func boot(routes: any Vapor.RoutesBuilder) throws {
         let routesGroup = routes.grouped("permission")
         routesGroup.post("grant", use: grantPermission)
         routesGroup.post("revoke", use: revokePermission)

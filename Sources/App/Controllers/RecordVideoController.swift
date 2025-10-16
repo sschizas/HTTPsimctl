@@ -14,7 +14,7 @@ struct RecordVideoController: RouteCollection {
     let fileExtension = "mp4"
     var pids: [String: String] = [:]
 
-    func boot(routes: Vapor.RoutesBuilder) throws {
+    func boot(routes: any Vapor.RoutesBuilder) throws {
         let routesGroup = routes.grouped("record-video")
         routesGroup.post("start", use: recordVideo)
         routesGroup.post("stop", use: stopRecordingVideo)
