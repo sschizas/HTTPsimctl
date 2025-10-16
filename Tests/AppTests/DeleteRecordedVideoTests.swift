@@ -10,11 +10,11 @@ import XCTVapor
 
 final class DeleteRecordedVideoTests: XCTestCase {
     var app: Application!
-    
+
     override func setUp() {
         self.app = try! Application.testable()
     }
-    
+
     override func tearDown() {
         self.app.shutdown()
     }
@@ -30,7 +30,7 @@ final class DeleteRecordedVideoTests: XCTestCase {
         shellSpy.stubbedIsProcessRunning = ProcessStatus.terminated
         shellSpy.stubbedRunCommandWithReturn = filepath
         _ = self.app.cache.set(filepath, to: "\(pid)")
-        
+
         // When
         try app.test(.DELETE, "/record-video", beforeRequest: { request in
             try request.content.encode(body, as: .json)

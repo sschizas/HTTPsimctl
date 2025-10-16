@@ -11,10 +11,10 @@ import Vapor
 struct OpenURLRequestBody: Content, SimulatorID {
     /// The URL to open.
     let urlToOpen: URL
-    
+
     /// The UUID of the simulator to open the URL on.
     var simulatorUDID: UUID?
-    
+
     /// A boolean value indicating whether the simulator is a clone.
     let isClone: Bool
 }

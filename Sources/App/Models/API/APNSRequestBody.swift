@@ -11,13 +11,13 @@ import Vapor
 struct APNSRequestBody: Content, SimulatorID {
     /// The APNS to open..
     let apns: String
-    
+
     /// The UUID of the simulator to open the URL on.
     var simulatorUDID: UUID?
-    
+
     /// A boolean value indicating whether the simulator is a clone.
     let isClone: Bool
-    
+
     let appBundleId: String
 }
 

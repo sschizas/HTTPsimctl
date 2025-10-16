@@ -10,15 +10,15 @@ import XCTVapor
 
 final class StopRecordVideoTests: XCTestCase {
     var app: Application!
-    
+
     override func setUp() {
         self.app = try! Application.testable()
     }
-    
+
     override func tearDown() {
         self.app.shutdown()
     }
-    
+
     // MARK: Tests
     func testStopRecordVideo() throws {
         // Given
@@ -30,7 +30,7 @@ final class StopRecordVideoTests: XCTestCase {
         shellSpy.stubbedIsProcessRunning = ProcessStatus.terminated
         shellSpy.stubbedRunCommandWithReturn = filepath
         _ = self.app.cache.set(filepath, to: "\(pid)")
-        
+
         // When
         try app.test(.POST, "/record-video/stop", beforeRequest: { request in
             try request.content.encode(body, as: .json)
@@ -45,7 +45,7 @@ final class StopRecordVideoTests: XCTestCase {
             XCTAssertEqual(shellSpy.invokedRunCommandParameters.command, "kill -s SIGINT 12352")
         })
     }
-    
+
     func testStopRecordVideoEmptyFilename() throws {
         // Given
         let pid = 12_352
@@ -56,7 +56,7 @@ final class StopRecordVideoTests: XCTestCase {
         shellSpy.stubbedIsProcessRunning = ProcessStatus.terminated
         shellSpy.stubbedRunCommandWithReturn = filepath
         _ = self.app.cache.set(filepath, to: "\(pid)")
-        
+
         // When
         try app.test(.POST, "/record-video/stop", beforeRequest: { request in
             try request.content.encode(body, as: .json)

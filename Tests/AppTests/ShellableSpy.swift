@@ -17,7 +17,7 @@ final class ShellableSpy: Shellable {
         self.invokedRunCommandParameters = (command, ())
         self.invokedRunCommandParametersList.append((command, ()))
     }
-    
+
     var invokedRunCommandWithReturn = false
     var invokedRunCommandWithReturnCount = 0
     var invokedRunCommandWithReturnParameters: (command: String, Void)!
@@ -34,7 +34,7 @@ final class ShellableSpy: Shellable {
         }
         return self.stubbedRunCommandWithReturn
     }
-    
+
     var invokedIsProcessRunning = false
     var invokedIsProcessRunningCount = 0
     var invokedIsProcessRunningParameters: (pid: String, Void)!

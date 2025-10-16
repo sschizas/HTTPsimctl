@@ -12,10 +12,10 @@ import Vapor
 struct RecordVideoRequestBody: Content, SimulatorID {
     /// The name of the video file to be recorded.
     let fileName: String
-    
+
     /// The UUID of the simulator to record the video from.
     var simulatorUDID: UUID?
-    
+
     /// A boolean value indicating whether the simulator is a clone.
     var isClone: Bool
 }

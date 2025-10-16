@@ -11,7 +11,7 @@ struct OpenURLController: RouteCollection {
         let routesGroup = routes.grouped("open-url")
         routesGroup.post(use: openURL)
     }
-    
+
     // MARK: Handlers
     private func openURL(req: Request) async throws -> Response {
         try OpenURLRequestBody.validate(content: req)

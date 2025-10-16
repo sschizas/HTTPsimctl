@@ -9,15 +9,15 @@ import XCTVapor
 
 final class APNSControllerTests: XCTestCase {
     var app: Application!
-    
+
     override func setUp() {
         self.app = try! Application.testable()
     }
-    
+
     override func tearDown() {
         self.app.shutdown()
     }
-    
+
     // MARK: Tests
     func testSendPushNotification() throws {
         // Given
@@ -43,7 +43,7 @@ final class APNSControllerTests: XCTestCase {
         self.app.shell = shellSpy
         shellSpy.stubbedIsProcessRunning = ProcessStatus.terminated
         shellSpy.stubbedRunCommandWithReturn = ""
-        
+
         // When
         try app.test(.POST, "/apns", beforeRequest: { request in
             try request.content.encode(body, as: .json)
@@ -54,7 +54,7 @@ final class APNSControllerTests: XCTestCase {
             XCTAssertTrue(shellSpy.invokedRunCommandWithReturnParameters?.command.contains("xcrun simctl push \(uuid) com.dummy.bundleID") ?? false)
         })
     }
-    
+
     func testSendPushNotificationFailure() throws {
         // Given
         let uuid = UUID()
@@ -80,7 +80,7 @@ final class APNSControllerTests: XCTestCase {
         shellSpy.stubbedIsProcessRunning = ProcessStatus.error
         shellSpy.stubbedRunCommandWithReturn = "error"
         shellSpy.stubbedRunCommandError = NSError(domain: "Foo", code: -1, userInfo: [:])
-        
+
         // When
         try app.test(.POST, "/apns", beforeRequest: { request in
             try request.content.encode(body, as: .json)

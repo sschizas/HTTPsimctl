@@ -11,15 +11,15 @@ import XCTVapor
 final class OpenURLTests: XCTestCase {
     var app: Application!
     let openURLURI = "/open-url"
-    
+
     override func setUp() {
         self.app = try! Application.testable()
     }
-    
+
     override func tearDown() {
         self.app.shutdown()
     }
-    
+
     // MARK: Tests
     func testPostSuccessWithoutSimulatorUDIDNonClone() throws {
         // Given
@@ -40,7 +40,7 @@ final class OpenURLTests: XCTestCase {
             XCTAssertEqual(shellSpy.invokedRunCommandParameters.command, "xcrun simctl openurl booted \"com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas\"")
         })
     }
-    
+
     func testPostSuccessWithoutSimulatorUDIDClone() throws {
         // Given
         let shellSpy = ShellableSpy()
@@ -60,18 +60,18 @@ final class OpenURLTests: XCTestCase {
             XCTAssertEqual(shellSpy.invokedRunCommandParameters.command, "xcrun simctl --set testing openurl booted \"com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas\"")
         })
     }
-    
+
     func testPostSuccessWithSimulatorUDIDNonClone() throws {
         // Given
         let uuid = UUID()
         let shellSpy = ShellableSpy()
         let body = OpenURLRequestBody(
             urlToOpen: URL(string: "com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas")!,
-            simulatorUDID: uuid, 
+            simulatorUDID: uuid,
             isClone: false
         )
         self.app.shell = shellSpy
-        
+
         // When
         try app.test(.POST, openURLURI, beforeRequest: { request in
             try request.content.encode(body, as: .json)
@@ -82,7 +82,7 @@ final class OpenURLTests: XCTestCase {
             XCTAssertEqual(shellSpy.invokedRunCommandParameters.command, "xcrun simctl openurl \(uuid.uuidString) \"com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas\"")
         })
     }
-    
+
     func testPostSuccessWithSimulatorUDIDClone() throws {
         // Given
         let uuid = UUID()
@@ -93,7 +93,7 @@ final class OpenURLTests: XCTestCase {
             isClone: true
         )
         self.app.shell = shellSpy
-        
+
         // When
         try app.test(.POST, openURLURI, beforeRequest: { request in
             try request.content.encode(body, as: .json)
@@ -104,12 +104,12 @@ final class OpenURLTests: XCTestCase {
             XCTAssertEqual(shellSpy.invokedRunCommandParameters.command, "xcrun simctl --set testing openurl \(uuid.uuidString) \"com.theblueground.dev.authorise://bluegroundappdev.page.link/sadasdasdas\"")
         })
     }
-    
+
     func testPostBadRequestEmptyURLToOpen() throws {
         // Given
         let shellSpy = ShellableSpy()
         self.app.shell = shellSpy
-        
+
         // When
         try app.test(.POST, openURLURI, beforeRequest: { request in
             try request.content.encode(["urlToOpen": ""])
@@ -119,12 +119,12 @@ final class OpenURLTests: XCTestCase {
             XCTAssertEqual(response.status, .badRequest)
         })
     }
-    
+
     func testPostBadRequestEmptySimulatorUDID() throws {
         // Given
         let shellSpy = ShellableSpy()
         self.app.shell = shellSpy
-        
+
         // When
         try app.test(.POST, openURLURI, beforeRequest: { request in
             try request.content.encode(["urlToOpen": "sdsdsds", "simulatorUDID": ""])

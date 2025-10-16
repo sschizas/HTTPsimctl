@@ -21,14 +21,14 @@ struct PermissionRequestBody: Content, SimulatorID {
         case reminders
         case siri
     }
-    
+
     let permission: Permission
-    
+
     let appBundleId: String
-    
+
     /// The UUID of the simulator to record the video from.
     var simulatorUDID: UUID?
-    
+
     /// A boolean value indicating whether the simulator is a clone.
     var isClone: Bool
 }
