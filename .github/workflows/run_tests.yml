@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 1
-      - uses: swift-actions/setup-swift@65540b95f51493d65f5e59e97dcef9629ddf11bf
+      - uses: swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a
         with:
           swift-version: ${{ matrix.swift }}
       - name: Get swift version
