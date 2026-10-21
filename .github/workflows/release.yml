@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Cache SPMs
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .build
           key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
@@ -39,7 +39,7 @@ jobs:
           mv Run httpsimctl
           tar -czf httpsimctl.tar.gz ./httpsimctl
       - name: Upload zip binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: httpsimctl.tar.gz
           path: .build/apple/Products/Release/httpsimctl.tar.gz
@@ -54,7 +54,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Download zip binary
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: httpsimctl.tar.gz
       - name: Get release notes
