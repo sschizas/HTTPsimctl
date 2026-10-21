@@ -1,0 +1,52 @@
+name: Deploy documentation
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build DocC
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Generate documentation
+        # Article-only DocC catalog: convert without compiling App / Vapor.
+        run: |
+          xcrun docc convert Sources/App/HTTPsimctl.docc \
+            --fallback-display-name HTTPsimctl \
+            --fallback-bundle-identifier com.sschizas.HTTPsimctl \
+            --fallback-bundle-version 1.0.0 \
+            --transform-for-static-hosting \
+            --hosting-base-path HTTPsimctl \
+            --output-path ./docs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
