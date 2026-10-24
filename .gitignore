@@ -90,3 +90,6 @@ fastlane/test_output
 iOSInjectionProject/
 
 .DS_Store
+
+# Generated DocC site (built in CI for GitHub Pages)
+/docs/

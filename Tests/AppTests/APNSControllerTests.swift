@@ -77,14 +77,20 @@ struct APNSControllerTests {
             app.shell = shellSpy
             shellSpy.stubbedIsProcessRunning = ProcessStatus.error
             shellSpy.stubbedRunCommandWithReturn = "error"
-            shellSpy.stubbedRunCommandError = NSError(domain: "Foo", code: -1, userInfo: [:])
+            shellSpy.stubbedRunCommandWithReturnError = Shell.Error.commandFailed(
+                command: "xcrun simctl push",
+                exitCode: 1,
+                stderr: "An error was encountered processing the command"
+            )
 
             // When
             try await app.testing().test(.POST, "/apns", beforeRequest: { request in
                 try request.content.encode(body, as: .json)
-            }, afterResponse: { response async in
+            }, afterResponse: { response async throws in
                 // Then
                 #expect(response.status == .internalServerError)
+                let error = try response.content.decode(ErrorBody.self)
+                #expect(error.reason.contains("An error was encountered processing the command"))
                 #expect(shellSpy.invokedRunCommandWithReturnCount == 1)
                 #expect(shellSpy.invokedRunCommandWithReturnParameters?.command.contains(
                     "xcrun simctl push \(uuid) com.dummy.bundleID") ?? false)
