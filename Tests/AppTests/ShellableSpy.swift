@@ -11,11 +11,15 @@ final class ShellableSpy: Shellable, @unchecked Sendable {
     var invokedRunCommandCount = 0
     var invokedRunCommandParameters: (command: String, Void)!
     var invokedRunCommandParametersList = [(command: String, Void)]()
-    func run(_ command: String) {
+    var stubbedRunError: Error?
+    func run(_ command: String) async throws {
         self.invokedRunCommand = true
         self.invokedRunCommandCount += 1
         self.invokedRunCommandParameters = (command, ())
         self.invokedRunCommandParametersList.append((command, ()))
+        if let stubbedRunError {
+            throw stubbedRunError
+        }
     }
 
     var invokedRunCommandWithReturn = false
@@ -23,14 +27,14 @@ final class ShellableSpy: Shellable, @unchecked Sendable {
     var invokedRunCommandWithReturnParameters: (command: String, Void)!
     var invokedRunCommandWithReturnParamsList = [(command: String, Void)]()
     var stubbedRunCommandWithReturn: String! = ""
-    var stubbedRunCommandError: Error?
-    func runCommandWithReturn(_ command: String) throws -> String {
+    var stubbedRunCommandWithReturnError: Error?
+    func runCommandWithReturn(_ command: String) async throws -> String {
         self.invokedRunCommandWithReturn = true
         self.invokedRunCommandWithReturnCount += 1
         self.invokedRunCommandWithReturnParameters = (command, ())
         self.invokedRunCommandWithReturnParamsList.append((command, ()))
-        if let stubbedRunCommandError {
-            throw stubbedRunCommandError
+        if let stubbedRunCommandWithReturnError {
+            throw stubbedRunCommandWithReturnError
         }
         return self.stubbedRunCommandWithReturn
     }

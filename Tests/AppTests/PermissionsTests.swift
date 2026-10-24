@@ -200,6 +200,66 @@ struct PermissionsTests {
         }
     }
 
+    @Test("Grant Permission Returns Error Status When simctl Fails")
+    func grantPermissionReturnsErrorStatusWhenSimctlFails() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            shellSpy.stubbedRunError = Shell.Error.commandFailed(
+                command: "xcrun simctl privacy",
+                exitCode: 1,
+                stderr: "Invalid device: booted"
+            )
+            app.shell = shellSpy
+            let body = PermissionRequestBody(
+                permission: PermissionRequestBody.Permission.addPhotos,
+                appBundleId: "sdsdsds",
+                isClone: false
+            )
+
+            // When
+            try await app.testing().test(.POST, "/permission/grant", beforeRequest: { request in
+                try request.content.encode(body, as: .json)
+            }, afterResponse: { response async throws in
+                // Then
+                #expect(response.status == .internalServerError)
+                let error = try response.content.decode(ErrorBody.self)
+                #expect(error.reason.contains("Invalid device: booted"))
+                #expect(shellSpy.invokedRunCommandCount == 1)
+            })
+        }
+    }
+
+    @Test("Revoke Permission Returns Error Status When simctl Fails")
+    func revokePermissionReturnsErrorStatusWhenSimctlFails() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            shellSpy.stubbedRunError = Shell.Error.commandFailed(
+                command: "xcrun simctl privacy",
+                exitCode: 1,
+                stderr: "Invalid device: booted"
+            )
+            app.shell = shellSpy
+            let body = PermissionRequestBody(
+                permission: PermissionRequestBody.Permission.addPhotos,
+                appBundleId: "sdsdsds",
+                isClone: false
+            )
+
+            // When
+            try await app.testing().test(.POST, "/permission/revoke", beforeRequest: { request in
+                try request.content.encode(body, as: .json)
+            }, afterResponse: { response async throws in
+                // Then
+                #expect(response.status == .internalServerError)
+                let error = try response.content.decode(ErrorBody.self)
+                #expect(error.reason.contains("Invalid device: booted"))
+                #expect(shellSpy.invokedRunCommandCount == 1)
+            })
+        }
+    }
+
     @Test("Revoke Permission Clone")
     func revokePermissionClone() async throws {
         try await withApp(configure: configure) { app in

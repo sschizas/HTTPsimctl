@@ -23,31 +23,21 @@ struct APNSController: RouteCollection {
         let tempDirectory = FileManager.default.temporaryDirectory
         let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("json")
 
+        // Write the JSON payload to the temporary file, and remove it on every exit path.
+        try body.apns.unescapedJSONString().write(to: tempFileURL, atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: tempFileURL) }
+        req.application.logger.info("Temporary file created at: \(tempFileURL.path)")
+
         do {
-            // Write the JSON payload to the temporary file
-            try body.apns.unescapedJSONString().write(to: tempFileURL, atomically: true, encoding: .utf8)
-
-            // Log the file path
-            req.application.logger.info("Temporary file created at: \(tempFileURL.path)")
-
-            // Construct the command to use the temporary file
-            let command = "/usr/bin/xcrun"
-            let arguments = ["simctl", testingFlag + "push", "booted", body.appBundleId, tempFileURL.path]
-
-            // Log the command being executed
-            req.application.logger.info("Executing command: \(command) \(arguments.joined(separator: " "))")
-
-            try req.application.shell.runCommandWithReturn("xcrun simctl \(testingFlag)push \(body.udid) \(body.appBundleId) \(tempFileURL.path)")
-
-            // Clean up the temporary file
-            try FileManager.default.removeItem(at: tempFileURL)
-
-            return Response(status: .noContent)
+            try await req.application.shell.runCommandWithReturn(
+                "xcrun simctl \(testingFlag)push \(body.udid) \(body.appBundleId) \(tempFileURL.path)"
+            )
         } catch {
-            // Log the error
-            req.application.logger.error("Error during openURL handler: \(error.localizedDescription)")
-            throw Abort(.internalServerError, reason: "Failed to send APNS push notification")
+            // Surface simctl's own error to the client instead of a generic message.
+            req.application.logger.report(error: error)
+            throw error
         }
+        return Response(status: .noContent)
     }
 }
 

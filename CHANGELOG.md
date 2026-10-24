@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- `/open-url` and `/permission/*` now reply only after `simctl` has finished, instead of immediately.
+- `simctl` failures are reported to the client (500 with `simctl`'s stderr as the reason) instead of a silent 204.
+- `/apns` returns `simctl push`'s actual error instead of a generic message, and always removes its temporary file.
+- Commands run through [swift-subprocess](https://github.com/swiftlang/swift-subprocess) so waiting on `simctl` no longer blocks a request thread; concurrent requests no longer stall each other.
+- Commands that run longer than 60 seconds are terminated and reported as 504.
+- Require Swift 6.4 (Xcode 27) to build from source, and update Vapor to 4.122.3.
+
+### Removed
+- Unused duplicate `Shell.run(pid:)`.
+
 ## [1.6.0] - 2025-10-16
 ### Changed
 - Support Swift 6.2
@@ -46,7 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for recording simulator screen and retreiving the file path.
 - Support for installing using Homebrew.
 
-[Unreleased]: https://github.com/sschizas/HTTPsimctl/compare/1.6.0...HEAD
+[Unreleased]: https://github.com/sschizas/HTTPsimctl/compare/1.7.0...HEAD
+[1.7.0]: https://github.com/sschizas/HTTPsimctl/compare/1.6.0...1.7.0
 [1.6.0]: https://github.com/sschizas/HTTPsimctl/compare/1.5.0...1.6.0
 [1.5.0]: https://github.com/sschizas/HTTPsimctl/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/sschizas/HTTPsimctl/compare/1.3.0...1.4.0

@@ -113,6 +113,35 @@ struct OpenURLTests {
         }
     }
 
+    @Test("Post Returns Error Status When simctl Fails")
+    func postReturnsErrorStatusWhenSimctlFails() async throws {
+        try await withApp(configure: configure) { app in
+            // Given
+            let shellSpy = ShellableSpy()
+            shellSpy.stubbedRunError = Shell.Error.commandFailed(
+                command: "xcrun simctl openurl",
+                exitCode: 1,
+                stderr: "Invalid device: booted"
+            )
+            app.shell = shellSpy
+            let body = OpenURLRequestBody(
+                urlToOpen: URL(string: "https://example.com")!,
+                isClone: false
+            )
+
+            // When
+            try await app.testing().test(.POST, openURLURI, beforeRequest: { request in
+                try request.content.encode(body, as: .json)
+            }, afterResponse: { response async throws in
+                // Then
+                #expect(response.status == .internalServerError)
+                let error = try response.content.decode(ErrorBody.self)
+                #expect(error.reason.contains("Invalid device: booted"))
+                #expect(shellSpy.invokedRunCommandCount == 1)
+            })
+        }
+    }
+
     @Test("Post Bad Request Empty URL To Open")
     func postBadRequestEmptyURLToOpen() async throws {
         try await withApp(configure: configure) { app in

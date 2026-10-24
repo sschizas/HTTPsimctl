@@ -28,7 +28,7 @@ struct RecordVideoController: RouteCollection {
         do {
             let testingFlag = body.isClone ? "--set testing " : ""
             req.application.logger.info("Start recording video with filename: \(body.fileName)")
-            let pid = try req.application.shell.runCommandWithReturn("xcrun simctl \(testingFlag)io \(body.udid) recordVideo --codec=h264 --force \(body.fileName).\(self.fileExtension) >/dev/null 2>&1 & echo $!")
+            let pid = try await req.application.shell.runCommandWithReturn("xcrun simctl \(testingFlag)io \(body.udid) recordVideo --codec=h264 --force \(body.fileName).\(self.fileExtension) >/dev/null 2>&1 & echo $!")
             try await req.cache.set(body.fileName, to: pid)
             return Response(status: .ok)
         } catch {
@@ -45,7 +45,7 @@ struct RecordVideoController: RouteCollection {
                 throw Abort(HTTPResponseStatus.internalServerError, reason: "PID for \(body.fileName) not found in cache.")
             }
             try await self.terminatePID(req, body, pid)
-            let filepath = try req.application.shell.runCommandWithReturn("realpath \(body.fileName).\(self.fileExtension)").trimmingCharacters(in: .whitespacesAndNewlines)
+            let filepath = try await req.application.shell.runCommandWithReturn("realpath \(body.fileName).\(self.fileExtension)").trimmingCharacters(in: .whitespacesAndNewlines)
             return StopRecordingVideoResponse(filePath: filepath)
         } catch {
             req.application.logger.report(error: error)
@@ -61,18 +61,23 @@ struct RecordVideoController: RouteCollection {
         }
         try await self.terminatePID(req, body, pid)
         req.application.logger.info("Delete video with filename: \(body.fileName)")
-        try req.application.shell.run("rm \(body.fileName).\(self.fileExtension)")
+        try await req.application.shell.run("rm \(body.fileName).\(self.fileExtension)")
         return Response(status: .ok)
     }
 
     private func terminatePID(_ req: Request, _ body: StopRecordingVideoRequestBody, _ pid: String) async throws {
         req.application.logger.info("Stop recording video with filename: \(body.fileName)")
-        try req.application.shell.run("kill -s SIGINT \(pid)")
+        do {
+            try await req.application.shell.run("kill -s SIGINT \(pid)")
+        } catch {
+            // The recorder may have already exited; the status check below settles it.
+            req.application.logger.warning("Failed to signal PID \(pid): \(error)")
+        }
 
         var status: ProcessStatus = .running
         while status == .running {
             status = req.application.shell.isProcessRunning(pid: pid)
-            try await Task.sleep(nanoseconds: 1_000_000_000)
+            try await Task.sleep(for: .seconds(1))
         }
 
         switch status {

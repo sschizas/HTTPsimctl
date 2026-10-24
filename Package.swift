@@ -1,4 +1,4 @@
-// swift-tools-version:6.2
+// swift-tools-version:6.4
 import PackageDescription
 
 let package = Package(
@@ -8,13 +8,16 @@ let package = Package(
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
-        .package(url: "https://github.com/vapor/vapor.git", from: "4.115.0")
+        .package(url: "https://github.com/vapor/vapor.git", from: "4.122.3"),
+        // Async process spawning, so request handlers never block on `Process`.
+        .package(url: "https://github.com/swiftlang/swift-subprocess.git", from: "1.0.0")
     ],
     targets: [
         .executableTarget(
             name: "App",
             dependencies: [
-                .product(name: "Vapor", package: "vapor")
+                .product(name: "Vapor", package: "vapor"),
+                .product(name: "Subprocess", package: "swift-subprocess")
             ],
             swiftSettings: [
                 .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release)),
@@ -41,5 +44,5 @@ let package = Package(
 )
 
 #if !RELEASE
-package.dependencies.append(.package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"))
+package.dependencies.append(.package(url: "https://github.com/apple/swift-docc-plugin", from: "1.5.0"))
 #endif
