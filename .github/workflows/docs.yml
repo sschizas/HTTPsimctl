@@ -36,6 +36,26 @@ jobs:
             --transform-for-static-hosting \
             --hosting-base-path HTTPsimctl \
             --output-path ./docs
+      - name: Redirect site root to the documentation
+        # DocC's root index.html is a generic app shell with no route for "/", so the bare
+        # site URL renders "The page you're looking for can't be found". Send it to the
+        # landing page. Every page under /documentation/ has its own index.html, so they
+        # keep working.
+        run: |
+          cat > docs/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>HTTPsimctl Documentation</title>
+            <meta http-equiv="refresh" content="0; url=documentation/httpsimctl/">
+            <link rel="canonical" href="documentation/httpsimctl/">
+          </head>
+          <body>
+            <p>Redirecting to <a href="documentation/httpsimctl/">the HTTPsimctl documentation</a>…</p>
+          </body>
+          </html>
+          HTML
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs
