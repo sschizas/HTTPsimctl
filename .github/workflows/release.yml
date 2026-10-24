@@ -14,35 +14,43 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-14
+    # Package.swift needs swift-tools-version 6.4, which ships with Xcode 27 (arm64 only image).
+    # The image's default Xcode is 27, so no setup-xcode step is needed.
+    runs-on: xcode-27
     steps:
-      - name: Select Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest
       - name: Checkout code
         uses: actions/checkout@v5
         with:
           fetch-depth: 1
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
       - name: Cache SPMs
         uses: actions/cache@v5
         with:
           path: .build
-          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          # .build is toolchain specific, so key it on the image as well.
+          key: xcode-27-spm-release-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-spm-
+            xcode-27-spm-release-
       - name: Build binary
+        # Universal binary. Xcode 27 warns that x86_64 is deprecated; it still builds.
         run: xcrun swift build -c release --arch arm64 --arch x86_64
       - name: Compress archive
         run: |
-          cd .build/apple/Products/Release
-          mv Run httpsimctl
+          # The output directory differs between SwiftPM build systems, so ask for it.
+          BIN_PATH="$(xcrun swift build -c release --arch arm64 --arch x86_64 --show-bin-path)"
+          cd "$BIN_PATH"
+          # The executable target is named App.
+          mv App httpsimctl
           tar -czf httpsimctl.tar.gz ./httpsimctl
+          echo "ARCHIVE_PATH=$BIN_PATH/httpsimctl.tar.gz" >> "$GITHUB_ENV"
       - name: Upload zip binary
         uses: actions/upload-artifact@v6
         with:
           name: httpsimctl.tar.gz
-          path: .build/apple/Products/Release/httpsimctl.tar.gz
+          path: ${{ env.ARCHIVE_PATH }}
           retention-days: 1
 
   create_release:
@@ -76,9 +84,14 @@ jobs:
   homebrew:
     needs: create_release
     name: Bump Homebrew formula
+    # Skip prerelease tags such as 1.8.0-rc1.
+    if: ${{ !contains(github.ref, '-') }}
     runs-on: ubuntu-latest
+    # The job authenticates with COMMITTER_TOKEN, so the workflow token only needs read access.
+    permissions:
+      contents: read
     steps:
-      - uses: mislav/bump-homebrew-formula-action@v3
+      - uses: mislav/bump-homebrew-formula-action@v4
         with:
           formula-name: httpsimctl
           formula-path: Formula/httpsimctl.rb
