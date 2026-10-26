@@ -27,7 +27,7 @@ jobs:
           xcodebuild -version
           swift --version
       - name: Cache SPMs
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .build
           # .build is toolchain specific, so key it on the image as well.

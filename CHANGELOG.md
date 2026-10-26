@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Bump actions/upload-pages-artifact from 3 to 5 - #25
+- Bump actions/upload-pages-artifact from 3 to 5
+- Bump actions/cache from 5 to 6
 
 ## [1.7.0] - 2026-10-24
 ### Changed
