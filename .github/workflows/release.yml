@@ -47,7 +47,7 @@ jobs:
           tar -czf httpsimctl.tar.gz ./httpsimctl
           echo "ARCHIVE_PATH=$BIN_PATH/httpsimctl.tar.gz" >> "$GITHUB_ENV"
       - name: Upload zip binary
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: httpsimctl.tar.gz
           path: ${{ env.ARCHIVE_PATH }}
