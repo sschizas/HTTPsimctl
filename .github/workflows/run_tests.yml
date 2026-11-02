@@ -14,7 +14,7 @@ jobs:
     runs-on: xcode-27
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 1
       # On macOS the Swift version is whatever the selected Xcode ships, so no setup-swift step is needed.
@@ -40,7 +40,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: ruby/setup-ruby@v1
